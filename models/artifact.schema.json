@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "mhd_model_bundle_v1",
+  "title": "Complete MHD task model bundle",
+  "type": "object",
+  "required": [
+    "format",
+    "artifact_id",
+    "request_id",
+    "request",
+    "acceptance",
+    "files",
+    "endpoints",
+    "feature_channels"
+  ],
+  "properties": {
+    "format": {
+      "const": "mhd_model_bundle_v1"
+    },
+    "artifact_id": {
+      "type": "string",
+      "pattern": "^model_[0-9a-f]{64}$"
+    },
+    "request_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "request": {
+      "type": "object",
+      "required": [
+        "model",
+        "framework",
+        "data",
+        "initialization",
+        "training"
+      ]
+    },
+    "acceptance": {
+      "type": "object",
+      "required": [
+        "status",
+        "training_receipt_sha256",
+        "replay_receipt_sha256"
+      ],
+      "properties": {
+        "status": {
+          "const": "accepted"
+        }
+      }
+    },
+    "files": {
+      "type": "object",
+      "required": [
+        "selected.pt",
+        "resume.pt"
+      ],
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^[0-9a-f]{64}$"
+      }
+    },
+    "endpoints": {
+      "type": "object"
+    },
+    "feature_channels": {
+      "type": "object"
+    }
+  }
+}

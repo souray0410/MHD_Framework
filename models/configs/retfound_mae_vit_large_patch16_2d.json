@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "architecture_id": "retfound_mae_vit_large_patch16_2d",
+  "family": "retfound_mae",
+  "spatial_dimensions": 2,
+  "implementation": "retfound_mae_timm_0_9_2",
+  "implementation_status": "implemented_acceptance_pending",
+  "task_configuration": {
+    "name": "retfound_mae_vit_large_patch16",
+    "spatial_dims": 2,
+    "in_channels": 3,
+    "num_classes": 2,
+    "views": 1
+  },
+  "initialization": "Separate explicit checkpoint source and SHA256; no weights included",
+  "pretraining_variants": [
+    "cfp",
+    "oct_bscan"
+  ],
+  "embed_dim": 1024,
+  "transformer_blocks": 24,
+  "attention_heads": 16,
+  "patch_size": 16,
+  "image_size": 224,
+  "pooling": "non-CLS tokens mean, then LayerNorm"
+}

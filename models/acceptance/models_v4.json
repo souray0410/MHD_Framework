@@ -1,0 +1,42 @@
+{
+  "date": "2026-09-09",
+  "framework_api": "V4",
+  "core_source_unchanged": true,
+  "source_sha256": {
+    "src/mhd_framework/__init__.py": "029dca49b31371f665fc67338197e993b3dd50b24589791fc65a56381c3f12ad",
+    "src/mhd_framework/core.py": "6f499046ff3068b76c01a69e25d11398f2d2c0ff3ebb18f2faf825ff0199e6ba",
+    "src/mhd_framework/utils.py": "4040d6f836d81b88a812ab8923e915fa7b8a5715d12f2167b21b2251b9747dda",
+    "src/mhd_framework/models/graph.py": "d9f4e32de3f9b9dde9d723b3cde2494a31cf4e3c38599d9bdbe0f3e09e114cde",
+    "src/mhd_framework/models/densenet.py": "4a0fa423120b41b76c28babff907eb8dba096a814ebdd4114c66ac21f87326cb",
+    "src/mhd_framework/models/__init__.py": "78e70a7a3ef8eafd31ccb367c33eef27864e112fc5eda8676720bb0ffa61c8bf",
+    "src/mhd_framework/models/resnet.py": "1d95b3ad0c2c94166113a3a40a4141c249cc53ffd8ec6ac9bcfd464261b67c33",
+    "src/mhd_framework/models/recipes.py": "d0025f24c938c4a25257b215d6274a4b07c9f6074d0f4acf19995a01cc7aaa1e",
+    "src/mhd_framework/models/artifacts.py": "4760089b2a55ab448f94028b98903dea819bb57cc02a4b12767a8c40836ebd89",
+    "src/mhd_framework/models/retfound.py": "3030f0861ca2814df34bf461066fc152c9b56197b1e78101e28b3c511b27e952"
+  },
+  "cpu_unit_tests": {
+    "passed": 48,
+    "torch": "2.8.0",
+    "torchvision": "0.23.0",
+    "timm": "0.9.2"
+  },
+  "registry_tests": {
+    "passed": 4
+  },
+  "gpu_receipt": "families_cuda.json",
+  "scope": "Synthetic numerical and checkpoint validation only; no official pretrained encoder or task training accepted",
+  "limitations": [
+    "Single-GPU acceptance is not two-GPU acceptance",
+    "Small acceptance batches are not approved training batches",
+    "RETFound large encoder tested at 224 pixels; formula unit probe uses a smaller transformer",
+    "3D DenseNet and 3D RETFound are not implemented"
+  ],
+  "wheel_import_outside_checkout": "passed",
+  "cpu_ddp": {
+    "world_size": 2,
+    "model": "resnet18_2d",
+    "steps": 2,
+    "status": "passed",
+    "scope": "Parameter synchronization only; no GPU DDP or dataset training claim"
+  }
+}

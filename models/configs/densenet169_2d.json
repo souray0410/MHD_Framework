@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "architecture_id": "densenet169_2d",
+  "family": "densenet",
+  "spatial_dimensions": 2,
+  "implementation": "torchvision_2d",
+  "implementation_status": "implemented_acceptance_pending",
+  "task_configuration": {
+    "name": "densenet169",
+    "spatial_dims": 2,
+    "in_channels": 3,
+    "num_classes": 2,
+    "views": 1
+  },
+  "initialization": "Separate explicit checkpoint source and SHA256; no weights included",
+  "pretraining_variants": [
+    "IMAGENET1K_V1"
+  ],
+  "dense_layers_per_block": [
+    6,
+    12,
+    32,
+    32
+  ]
+}

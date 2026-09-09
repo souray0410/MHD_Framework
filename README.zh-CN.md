@@ -27,3 +27,7 @@ from mhd_framework.utils import MHD_Trainer
 完整可运行示例见 [examples/basic.py](examples/basic.py)。它构建线性层与标量损失组成的超图，执行前向和反向，使用合成 CPU 张量。
 
 开发、测试与目录说明见[英文首页](README.md)和[贡献指南](CONTRIBUTING.md)。[MIT 许可证](LICENSE)。
+
+## Models
+
+See [complete task models, graph endpoints and verified artifacts](docs/models.md).

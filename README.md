@@ -65,3 +65,7 @@ Source is under `src/mhd_framework/`; tests, examples and documentation have sep
 ## License
 
 [MIT](LICENSE). Maintained by Haoding Souray Meng.
+
+## Models
+
+See [complete task models, graph endpoints and verified artifacts](docs/models.md).
