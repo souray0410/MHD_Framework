@@ -48,6 +48,10 @@ python examples/basic.py
 
 The example wraps a linear layer and scalar loss, executes their forward levels, and propagates gradients through the reverse levels. It runs on synthetic CPU tensors.
 
+## Model zoo
+
+[Architecture and trained-artifact registry](docs/model_zoo.md). The initial catalog is planned; accepted trained weights are listed separately from architecture implementations.
+
 ## Development
 
 ```bash

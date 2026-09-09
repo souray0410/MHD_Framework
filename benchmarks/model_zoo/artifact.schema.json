@@ -1,0 +1,351 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/souray0410/MHD_Framework/benchmarks/model_zoo/artifact.schema.json",
+  "title": "MHD model artifact provenance",
+  "type": "object",
+  "required": [
+    "artifact_id",
+    "architecture",
+    "framework",
+    "data",
+    "training",
+    "initialization",
+    "checkpoint",
+    "evidence",
+    "access",
+    "status"
+  ],
+  "properties": {
+    "artifact_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "architecture": {
+      "type": "object",
+      "required": [
+        "id",
+        "adapter_commit",
+        "spatial_dimensions",
+        "feature_interface"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "adapter_commit": {
+          "$ref": "#/$defs/git_sha"
+        },
+        "spatial_dimensions": {
+          "enum": [
+            1,
+            2,
+            3,
+            4
+          ]
+        },
+        "feature_interface": {
+          "type": "object",
+          "required": [
+            "endpoints",
+            "prediction_unit"
+          ],
+          "properties": {
+            "prediction_unit": {
+              "type": "string"
+            },
+            "endpoints": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "node_id",
+                  "axes"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "node_id": {
+                    "type": [
+                      "integer",
+                      "string"
+                    ]
+                  },
+                  "axes": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "framework": {
+      "type": "object",
+      "required": [
+        "api",
+        "commit"
+      ],
+      "properties": {
+        "api": {
+          "type": "string"
+        },
+        "commit": {
+          "$ref": "#/$defs/git_sha"
+        }
+      }
+    },
+    "data": {
+      "type": "object",
+      "required": [
+        "dataset_id",
+        "cohort_id",
+        "split_sha256",
+        "preprocessing_sha256",
+        "label_protocol_sha256",
+        "modality",
+        "prediction_unit",
+        "input_shape",
+        "exposure_ledger_sha256"
+      ],
+      "properties": {
+        "dataset_id": {
+          "type": "string"
+        },
+        "cohort_id": {
+          "type": "string"
+        },
+        "split_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "preprocessing_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "label_protocol_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "exposure_ledger_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "modality": {
+          "type": "string"
+        },
+        "prediction_unit": {
+          "type": "string"
+        },
+        "input_shape": {
+          "type": "array",
+          "items": {
+            "type": [
+              "integer",
+              "string"
+            ]
+          }
+        }
+      }
+    },
+    "initialization": {
+      "type": "object",
+      "required": [
+        "kind",
+        "source",
+        "sha256",
+        "conversion"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "random",
+            "external_pretrained",
+            "prior_trained"
+          ]
+        },
+        "source": {
+          "type": "string"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "conversion": {
+          "type": "string"
+        }
+      }
+    },
+    "training": {
+      "type": "object",
+      "required": [
+        "protocol_sha256",
+        "seed",
+        "environment_sha256",
+        "effective_batch",
+        "microbatch",
+        "world_size",
+        "precision",
+        "bn_policy"
+      ],
+      "properties": {
+        "protocol_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "environment_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "seed": {
+          "type": "integer"
+        },
+        "effective_batch": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "microbatch": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "world_size": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "precision": {
+          "type": "string"
+        },
+        "bn_policy": {
+          "type": "string"
+        }
+      }
+    },
+    "checkpoint": {
+      "type": "object",
+      "required": [
+        "sha256",
+        "artifact_ref"
+      ],
+      "properties": {
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "artifact_ref": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "required": [
+        "implementation_receipt",
+        "training_receipt",
+        "resume_receipt",
+        "selection_metric"
+      ],
+      "properties": {
+        "implementation_receipt": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "training_receipt": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "resume_receipt": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "selection_metric": {
+          "type": "string"
+        }
+      }
+    },
+    "access": {
+      "type": "object",
+      "required": [
+        "visibility",
+        "license_review"
+      ],
+      "properties": {
+        "visibility": {
+          "enum": [
+            "restricted",
+            "public"
+          ]
+        },
+        "license_review": {
+          "type": "string"
+        }
+      }
+    },
+    "status": {
+      "enum": [
+        "trained_pending_acceptance",
+        "reusable",
+        "failed",
+        "retired"
+      ]
+    },
+    "parent_artifact_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "migration_receipt": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "git_sha": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{40}$"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "reusable"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "evidence": {
+            "properties": {
+              "implementation_receipt": {
+                "type": "string",
+                "minLength": 1
+              },
+              "training_receipt": {
+                "type": "string",
+                "minLength": 1
+              },
+              "resume_receipt": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}
