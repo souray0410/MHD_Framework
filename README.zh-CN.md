@@ -1,23 +1,29 @@
 # MHD Framework
 
-基于 PyTorch 的显式超图计算工具箱。Node 携带状态，Edge 承载运算，Topo 描述连接和执行 Level，Graph 执行计算。
+**基于 PyTorch 的显式超图计算框架。**
 
-**当前分支提供 V5。** main 维护开发中的 V5，`release/v4` 提供 LOOK 与 Radon_Bridge 使用的 V4。和 PyTorch 一样，安装哪个版本就使用哪个版本；源码不同时装入多代实现，也没有兼容开关。
+[API 文档](docs/api.md) · [安装与版本](docs/installation.md) · [版本下载](https://github.com/souray0410/MHD_Framework/releases) · [English](README.md)
+
+Node 保存张量状态，Edge 封装运算，Topo 定义节点与边的连接、顺序和执行层级，Graph 执行指定层级。底层计算和梯度由 PyTorch 模块与 autograd 完成。
+
+## 安装
+
+支持 Python 3.11–3.13、PyTorch 2.8 及以上。先根据硬件安装对应 PyTorch，再选择框架版本：
 
 ```bash
-python3.11 -m venv .venv
-source .venv/bin/activate
-pip install -e '.[dev]'
-pytest
+python -m pip install "mhd-framework @ git+https://github.com/souray0410/MHD_Framework.git@V4"
 ```
+
+- **V4**：计算语义冻结的稳定 API。
+- **V5**：开发预览版，需主动选择；main 继续开发此版本。
+
+版本源码和 wheel 通过 GitHub Releases 下载，各版本使用相同导入路径：
 
 ```python
 from mhd_framework.core import MHD_Node, MHD_Edge, MHD_Topo, MHD_Graph
 from mhd_framework.utils import MHD_Trainer
 ```
 
-两个发布分支均采用 `src/mhd_framework/core.py`、`src/mhd_framework/utils.py`、tests、docs、examples、scripts 等统一工程结构，计算语义分别由各版本定义。项目在独立环境中锁定具体 Git 提交；安装版本更新不会静默发生。
+完整可运行示例见 [examples/basic.py](examples/basic.py)。它构建线性层与标量损失组成的超图，执行前向和反向，使用合成 CPU 张量。
 
-原始 V1–V5 文件夹、历史实验和旧导入路径完整保存在[归档分支](docs/history.md)。旧整对象 pickle 仍需原环境；不能把 state_dict 可加载解释为旧 pickle 可直接加载。
-
-工具箱不绑定 Ibex、ws02、数据路径或研究任务。[API](docs/api.md) · [开发](docs/development.md) · [贡献](CONTRIBUTING.md) · [版本与目录](README.md)。
+开发、测试与目录说明见[英文首页](README.md)和[贡献指南](CONTRIBUTING.md)。[MIT 许可证](LICENSE)。

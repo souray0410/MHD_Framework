@@ -412,7 +412,7 @@ def test_existing_model_equivalence_with_v5(model, device):
 def test_readme_python_examples():
     import re
     from pathlib import Path
-    readme = Path(__file__).resolve().parents[2] / "docs" / "api.md"
+    readme = Path(__file__).resolve().parents[2] / "docs" / "api.zh-CN.md"
     namespace = {}
     fence = chr(96) * 3
     for snippet in re.findall(fence + "python\n(.*?)" + fence, readme.read_text(), re.S):

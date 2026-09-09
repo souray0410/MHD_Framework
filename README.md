@@ -1,48 +1,67 @@
 # MHD Framework
 
-[中文说明](README.zh-CN.md)
+**Explicit hypergraph computation for PyTorch.**
 
-A PyTorch toolbox for explicit hypergraph computation. **Node** carries state, **Edge** defines operations, **Topo** specifies connectivity and level order, and **Graph** executes the computation.
+[Documentation](docs/api.md) · [Installation and versions](docs/installation.md) · [Releases](https://github.com/souray0410/MHD_Framework/releases) · [中文](README.zh-CN.md)
 
-**This branch: V5 — development; not used by current LOOK/Radon_Bridge experiments.** The installed release selects the API, as with other Python libraries. There are no bundled parallel historical implementations and no runtime compatibility switch.
+MHD Framework represents neural computation with four components: nodes carry tensor state, edges wrap operations, topology defines connections and execution levels, and a graph executes the selected levels. PyTorch modules and autograd provide the underlying computation.
 
 ## Installation
 
+Python 3.11–3.13 and PyTorch 2.8 or later are required. Install the appropriate PyTorch build for your hardware, then select a framework release:
+
 ```bash
-python3.11 -m venv .venv
-source .venv/bin/activate
-pip install -e '.[dev]'
-pytest
+python -m pip install "mhd-framework @ git+https://github.com/souray0410/MHD_Framework.git@V4"
 ```
+
+| Version | Status | Source |
+|---|---|---|
+| V4 | Stable API with frozen computation semantics | [V4](https://github.com/souray0410/MHD_Framework/tree/V4) |
+| V5 | Development preview | [V5](https://github.com/souray0410/MHD_Framework/tree/V5) |
+| main | Ongoing V5 development | [main](https://github.com/souray0410/MHD_Framework/tree/main) |
+
+Release archives and wheels are distributed through GitHub Releases. See [installation](docs/installation.md) for preview and editable installs.
+
+## Core API
 
 ```python
 from mhd_framework.core import MHD_Node, MHD_Edge, MHD_Topo, MHD_Graph
 from mhd_framework.utils import MHD_Trainer
 ```
 
-This is a source distribution; these instructions do not imply publication on PyPI. Pin an exact Git commit for a reproducible research environment. Version information is available as `mhd_framework.__version__` and `mhd_framework.__api_version__`.
+| Component | Responsibility |
+|---|---|
+| `MHD_Node` | Feature and gradient message state |
+| `MHD_Edge` | Ordered operations, including `torch.nn.Module` instances |
+| `MHD_Topo` | Node–edge roles, ordering and execution levels |
+| `MHD_Graph` | Graph execution and gradient propagation |
 
-## Versions
+The import paths stay consistent across releases; behavior is determined by the installed version. See the [API guide](docs/api.md) for aggregation and backward semantics.
 
-- [`main`](https://github.com/souray0410/MHD_Framework): V5 development.
-- [`release/v4`](https://github.com/souray0410/MHD_Framework/tree/release/v4): installable V4 with frozen tensor semantics and the same modern project structure.
-- [Historical archive](docs/history.md): original version folders, experiments and legacy Python import paths.
+## Example
 
-Upgrading the installed version is explicit. Separate applications may install different pinned versions in their own environments. An old full-object pickle still requires its original source/environment; do not confuse that with state_dict compatibility.
+A complete two-operation graph is provided in [examples/basic.py](examples/basic.py):
 
-## Structure
-
-```text
-src/mhd_framework/           core.py, utils.py, explicit public package exports
-tests/unit/        current release correctness tests
-tests/integration/ explicit integration checks
-tests/helpers/     synthetic reference models
-examples/          minimal runnable examples
-benchmarks/        controlled benchmark records
-docs/              API, development and history
-scripts/           development check/test entry point
+```bash
+python examples/basic.py
 ```
 
-The toolbox has no cluster account, personal server path, research dataset or job queue. [API guide](docs/api.md) · [Development](docs/development.md) · [Contributing](CONTRIBUTING.md) · [MIT license](LICENSE).
+The example wraps a linear layer and scalar loss, executes their forward levels, and propagates gradients through the reverse levels. It runs on synthetic CPU tensors.
 
-Haoding Souray Meng (孟号丁) · [souray0410](https://github.com/souray0410)
+## Development
+
+```bash
+git clone https://github.com/souray0410/MHD_Framework.git
+cd MHD_Framework
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install -e '.[dev]'
+python scripts/manage.py test
+python -m build
+```
+
+Source is under `src/mhd_framework/`; tests, examples and documentation have separate directories. [Contributing](CONTRIBUTING.md) describes change and validation requirements. [Release policy](docs/releases.md) describes version stability.
+
+## License
+
+[MIT](LICENSE). Maintained by Haoding Souray Meng.
