@@ -165,3 +165,34 @@ References: [DenseNet builders](https://docs.pytorch.org/vision/stable/models/de
 The original RETFound environment used timm 0.3.2. This is a declared modern-runtime
 adaptation with formula/gradient checks, not a claim of reproducing the original
 training environment or already verifying all official pretrained checkpoints.
+
+## Dataset-specific classifier training
+
+`python -m mhd_framework.models.training --job job.json --output attempt_directory
+--mode preflight` executes two real distributed updates and checkpoint replay.
+`--mode train` runs the explicitly configured classification protocol. Launch it
+with `torchrun`; world size, effective batch and per-rank microbatch are recorded
+separately. A manifest gives sample IDs, labels, relative NumPy array paths and
+SHA256 values. Train and development manifests must be disjoint; this entry point
+rejects other data roles. It performs no test evaluation or data discovery.
+
+Model definitions contain the prediction graph. This trainer owns cross-entropy,
+AdamW, gradient accumulation, clipping, development selection and plateau rules.
+The loss is ordinary unweighted cross-entropy, with no smoothing. All parameters
+train; ordinary BN uses per-rank microbatches. Rank-0 buffers define the selected
+checkpoint and are broadcast before sharded evaluation. Accumulation does not
+make different BN microbatches equivalent. Preflight changes are recorded before
+training; training never silently changes the declared batch or protocol.
+
+Each attempt retains request, progress, curves, best full-model state, last full
+continuation state including per-rank RNG, development predictions and acceptance
+receipts. Only a plateau-terminated, strictly replayed model enters the shared
+store. Hitting the maximum epoch count is `needs_attention`. Selected weights and
+last optimizer states remain separate. Interruption leaves the attempt intact;
+a controller may restart the same initialization/seed in a new attempt. The CLI
+does not claim transparent mid-epoch resume. The saved continuation state is
+available for explicitly implemented restoration procedures.
+
+Input exports and study recipes belong outside the toolbox. A new task/dataset
+creates a new request and README, even when the architecture is identical. No
+clinical labels, participant lists or research project logic belong in this package.
