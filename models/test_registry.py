@@ -9,6 +9,12 @@ import validate
 
 
 class IdentityTests(unittest.TestCase):
+    def copy_model_directories(self, source, root):
+        catalog=json.loads((source/'catalog.json').read_text())
+        for item in catalog['architectures']:
+            directory=Path(item['config_file']).parent
+            shutil.copytree(source/directory, root/directory)
+
     def record(self):
         return {'request': {'model': {'name': 'resnet50'}, 'framework': {'api': 'V4'}, 'data': {'cohort': 'small'}, 'training': {'seed': 3416}}, 'files': {'selected.pt': 'a'*64}, 'acceptance': {'run': 'first'}}
 
@@ -30,7 +36,7 @@ class IdentityTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             shutil.copy(source / 'catalog.json', root)
-            shutil.copytree(source / 'configs', root / 'configs')
+            self.copy_model_directories(source, root)
             catalog = json.loads((root / 'catalog.json').read_text())
             config = root / catalog['architectures'][0]['config_file']
             cfg = json.loads(config.read_text())
@@ -43,7 +49,7 @@ class IdentityTests(unittest.TestCase):
         source = Path(__file__).resolve().parent
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            shutil.copytree(source / 'configs', root / 'configs')
+            self.copy_model_directories(source, root)
             catalog = json.loads((source / 'catalog.json').read_text())
             catalog['architectures'].append(catalog['architectures'][0])
             (root / 'catalog.json').write_text(json.dumps(catalog))

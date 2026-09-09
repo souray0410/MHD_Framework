@@ -23,6 +23,9 @@ def validate(root):
         key=item['architecture_id']
         if key in names: raise ValueError('Duplicate architecture ID: '+key)
         names.add(key)
+        readme=(root/item['readme_file']).resolve()
+        if not readme.is_relative_to(root) or not readme.is_file():
+            raise ValueError('Missing model README inside models directory: '+key)
         path=(root/item['config_file']).resolve()
         if not path.is_relative_to(root): raise ValueError('Configuration outside models directory')
         config=json.loads(path.read_text())

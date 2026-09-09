@@ -1,9 +1,4 @@
-"""Stage-addressable MHD ResNets with complete task heads.
-
-2D operations follow torchvision. The explicitly named 3D adaptation inflates
-2D kernels; it is not an official pretrained 3D model. No data or job launches
-are performed by this module.
-"""
+"""MHD ResNet task models."""
 from dataclasses import asdict, dataclass
 import copy
 
@@ -130,12 +125,7 @@ class ResidualAddReLU(nn.Module):
 
 
 class MHDResNet(MHD_Graph):
-    """Full classifier with stable named endpoints and one parameter owner.
-
-    For multiple views, spatial features are per view; pooling averages view
-    features before the task head. Native networks and project methods must use
-    the same view and preprocessing contracts when exchanging checkpoints.
-    """
+    """ResNet classifier with named graph endpoints."""
     def __init__(self, config: ResNetConfig, *, weights=None, device='cpu'):
         reference = native_resnet(config, weights=weights)
         names, operations, definitions = ['input'], [], []

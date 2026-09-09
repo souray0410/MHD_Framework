@@ -1,0 +1,29 @@
+{
+  "parent_commit": "0c2bcf9e2414c3d056c892c2a22fbcdc878d294f",
+  "change": "Per-model README/config layout; concise model docstrings",
+  "model_computation_ast_unchanged": [
+    "src/mhd_framework/models/graph.py",
+    "src/mhd_framework/models/densenet.py",
+    "src/mhd_framework/models/__init__.py",
+    "src/mhd_framework/models/resnet.py",
+    "src/mhd_framework/models/recipes.py",
+    "src/mhd_framework/models/artifacts.py",
+    "src/mhd_framework/models/retfound.py"
+  ],
+  "source_sha256": {
+    "src/mhd_framework/__init__.py": "029dca49b31371f665fc67338197e993b3dd50b24589791fc65a56381c3f12ad",
+    "src/mhd_framework/core.py": "6f499046ff3068b76c01a69e25d11398f2d2c0ff3ebb18f2faf825ff0199e6ba",
+    "src/mhd_framework/utils.py": "4040d6f836d81b88a812ab8923e915fa7b8a5715d12f2167b21b2251b9747dda",
+    "src/mhd_framework/models/graph.py": "d9f4e32de3f9b9dde9d723b3cde2494a31cf4e3c38599d9bdbe0f3e09e114cde",
+    "src/mhd_framework/models/densenet.py": "4a0fa423120b41b76c28babff907eb8dba096a814ebdd4114c66ac21f87326cb",
+    "src/mhd_framework/models/__init__.py": "78e70a7a3ef8eafd31ccb367c33eef27864e112fc5eda8676720bb0ffa61c8bf",
+    "src/mhd_framework/models/resnet.py": "bc9f8a35f55d5b67c16de1f37d6ee4ac2d54baa1543e3852f49079c4d1c05eba",
+    "src/mhd_framework/models/recipes.py": "d0025f24c938c4a25257b215d6274a4b07c9f6074d0f4acf19995a01cc7aaa1e",
+    "src/mhd_framework/models/artifacts.py": "4760089b2a55ab448f94028b98903dea819bb57cc02a4b12767a8c40836ebd89",
+    "src/mhd_framework/models/retfound.py": "0be59f6e3b2fcdcee1b26d0d3ebfe9c63182c4d1913dfe1b3ea06762693a7e07"
+  },
+  "catalog_identity_tests": 4,
+  "model_readmes": 15,
+  "local_readme_links": "passed",
+  "gpu_rerun": "Not needed for unchanged computation; numerical acceptance remains tied to parent revision"
+}

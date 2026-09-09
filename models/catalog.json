@@ -12,11 +12,12 @@
       "implementation_status": "implemented_acceptance_pending",
       "initial_framework_api": "V4",
       "weights": [],
-      "config_file": "configs/resnet18_2d_torchvision.json",
+      "config_file": "resnet18_2d_torchvision/config.json",
       "config_sha256": "4537a99cee41abeacb95883f8ac4536547d95c221d605ce8cff9f04f409282ac",
       "builder": "mhd_framework.models.create_model",
       "implementation": "torchvision_2d",
-      "architecture_scope": "Independent named implementation; no automatic dimensionality conversion"
+      "architecture_scope": "Independent named implementation; no automatic dimensionality conversion",
+      "readme_file": "resnet18_2d_torchvision/README.md"
     },
     {
       "architecture_id": "resnet34_2d_torchvision",
@@ -27,11 +28,12 @@
       "implementation_status": "implemented_acceptance_pending",
       "initial_framework_api": "V4",
       "weights": [],
-      "config_file": "configs/resnet34_2d_torchvision.json",
+      "config_file": "resnet34_2d_torchvision/config.json",
       "config_sha256": "dcfbd88676dde6165839c48ba061b131d17886a4b62e0535546b61c926c013cd",
       "builder": "mhd_framework.models.create_model",
       "implementation": "torchvision_2d",
-      "architecture_scope": "Independent named implementation; no automatic dimensionality conversion"
+      "architecture_scope": "Independent named implementation; no automatic dimensionality conversion",
+      "readme_file": "resnet34_2d_torchvision/README.md"
     },
     {
       "architecture_id": "resnet50_2d_torchvision",
@@ -42,11 +44,12 @@
       "implementation_status": "implemented_acceptance_pending",
       "initial_framework_api": "V4",
       "weights": [],
-      "config_file": "configs/resnet50_2d_torchvision.json",
+      "config_file": "resnet50_2d_torchvision/config.json",
       "config_sha256": "affc4fa46cf2ca0820bc35bd4068e2f00d704684c0a259fbde0e15e6f4648937",
       "builder": "mhd_framework.models.create_model",
       "implementation": "torchvision_2d",
-      "architecture_scope": "Independent named implementation; no automatic dimensionality conversion"
+      "architecture_scope": "Independent named implementation; no automatic dimensionality conversion",
+      "readme_file": "resnet50_2d_torchvision/README.md"
     },
     {
       "architecture_id": "resnet101_2d_torchvision",
@@ -57,11 +60,12 @@
       "implementation_status": "implemented_acceptance_pending",
       "initial_framework_api": "V4",
       "weights": [],
-      "config_file": "configs/resnet101_2d_torchvision.json",
+      "config_file": "resnet101_2d_torchvision/config.json",
       "config_sha256": "90ddc6046a984b177b256194bef1778f40993b1a933f8ecf9e36792b2591ea99",
       "builder": "mhd_framework.models.create_model",
       "implementation": "torchvision_2d",
-      "architecture_scope": "Independent named implementation; no automatic dimensionality conversion"
+      "architecture_scope": "Independent named implementation; no automatic dimensionality conversion",
+      "readme_file": "resnet101_2d_torchvision/README.md"
     },
     {
       "architecture_id": "resnet152_2d_torchvision",
@@ -72,11 +76,12 @@
       "implementation_status": "implemented_acceptance_pending",
       "initial_framework_api": "V4",
       "weights": [],
-      "config_file": "configs/resnet152_2d_torchvision.json",
+      "config_file": "resnet152_2d_torchvision/config.json",
       "config_sha256": "63264f86673b131b9309a78a5ad278b5cb9891a5b294cd95b63da2eec054ddf9",
       "builder": "mhd_framework.models.create_model",
       "implementation": "torchvision_2d",
-      "architecture_scope": "Independent named implementation; no automatic dimensionality conversion"
+      "architecture_scope": "Independent named implementation; no automatic dimensionality conversion",
+      "readme_file": "resnet152_2d_torchvision/README.md"
     },
     {
       "architecture_id": "resnet18_3d_inflated",
@@ -87,11 +92,12 @@
       "implementation_status": "implemented_acceptance_pending",
       "initial_framework_api": "V4",
       "weights": [],
-      "config_file": "configs/resnet18_3d_inflated.json",
+      "config_file": "resnet18_3d_inflated/config.json",
       "config_sha256": "8fe41411805774f99cb9a6f19af14bf6e2f0c188117038edb5436664b353c537",
       "builder": "mhd_framework.models.create_model",
       "implementation": "inflated_3d",
-      "architecture_scope": "Independent named implementation; no automatic dimensionality conversion"
+      "architecture_scope": "Independent named implementation; no automatic dimensionality conversion",
+      "readme_file": "resnet18_3d_inflated/README.md"
     },
     {
       "architecture_id": "resnet34_3d_inflated",
@@ -102,11 +108,12 @@
       "implementation_status": "implemented_acceptance_pending",
       "initial_framework_api": "V4",
       "weights": [],
-      "config_file": "configs/resnet34_3d_inflated.json",
+      "config_file": "resnet34_3d_inflated/config.json",
       "config_sha256": "58dc02cc32ed65290f5f8a87af6c3ae0334090c4f8d03c9700de4f4c55a8b771",
       "builder": "mhd_framework.models.create_model",
       "implementation": "inflated_3d",
-      "architecture_scope": "Independent named implementation; no automatic dimensionality conversion"
+      "architecture_scope": "Independent named implementation; no automatic dimensionality conversion",
+      "readme_file": "resnet34_3d_inflated/README.md"
     },
     {
       "architecture_id": "resnet50_3d_inflated",
@@ -117,11 +124,12 @@
       "implementation_status": "implemented_acceptance_pending",
       "initial_framework_api": "V4",
       "weights": [],
-      "config_file": "configs/resnet50_3d_inflated.json",
+      "config_file": "resnet50_3d_inflated/config.json",
       "config_sha256": "f895e287058bf5337c83fca956c3c3687b69b7f527728170974e6296081d5a43",
       "builder": "mhd_framework.models.create_model",
       "implementation": "inflated_3d",
-      "architecture_scope": "Independent named implementation; no automatic dimensionality conversion"
+      "architecture_scope": "Independent named implementation; no automatic dimensionality conversion",
+      "readme_file": "resnet50_3d_inflated/README.md"
     },
     {
       "architecture_id": "resnet101_3d_inflated",
@@ -132,11 +140,12 @@
       "implementation_status": "implemented_acceptance_pending",
       "initial_framework_api": "V4",
       "weights": [],
-      "config_file": "configs/resnet101_3d_inflated.json",
+      "config_file": "resnet101_3d_inflated/config.json",
       "config_sha256": "4729d45269c2992e50b83170560f5120e2d6ea4ab10dd341f18342ea468aba6a",
       "builder": "mhd_framework.models.create_model",
       "implementation": "inflated_3d",
-      "architecture_scope": "Independent named implementation; no automatic dimensionality conversion"
+      "architecture_scope": "Independent named implementation; no automatic dimensionality conversion",
+      "readme_file": "resnet101_3d_inflated/README.md"
     },
     {
       "architecture_id": "resnet152_3d_inflated",
@@ -147,11 +156,12 @@
       "implementation_status": "implemented_acceptance_pending",
       "initial_framework_api": "V4",
       "weights": [],
-      "config_file": "configs/resnet152_3d_inflated.json",
+      "config_file": "resnet152_3d_inflated/config.json",
       "config_sha256": "55624231223480cfadfc752d7db04e64ab9fe3f556f969a02050b8042795e657",
       "builder": "mhd_framework.models.create_model",
       "implementation": "inflated_3d",
-      "architecture_scope": "Independent named implementation; no automatic dimensionality conversion"
+      "architecture_scope": "Independent named implementation; no automatic dimensionality conversion",
+      "readme_file": "resnet152_3d_inflated/README.md"
     },
     {
       "architecture_id": "densenet121_2d",
@@ -160,10 +170,11 @@
       "implementation_status": "implemented_acceptance_pending",
       "initial_framework_api": "V4",
       "weights": [],
-      "config_file": "configs/densenet121_2d.json",
+      "config_file": "densenet121_2d/config.json",
       "config_sha256": "eac6557d476b69fc06b04ffaf7512ed7b737af3fe981fd5629f0576e373144f0",
       "builder": "mhd_framework.models.create_model",
-      "implementation": "torchvision_2d"
+      "implementation": "torchvision_2d",
+      "readme_file": "densenet121_2d/README.md"
     },
     {
       "architecture_id": "densenet161_2d",
@@ -172,10 +183,11 @@
       "implementation_status": "implemented_acceptance_pending",
       "initial_framework_api": "V4",
       "weights": [],
-      "config_file": "configs/densenet161_2d.json",
+      "config_file": "densenet161_2d/config.json",
       "config_sha256": "b85fda5b76e2cd61970a753dec97fe36f316fb4d09275117e14e87c683989aa4",
       "builder": "mhd_framework.models.create_model",
-      "implementation": "torchvision_2d"
+      "implementation": "torchvision_2d",
+      "readme_file": "densenet161_2d/README.md"
     },
     {
       "architecture_id": "densenet169_2d",
@@ -184,10 +196,11 @@
       "implementation_status": "implemented_acceptance_pending",
       "initial_framework_api": "V4",
       "weights": [],
-      "config_file": "configs/densenet169_2d.json",
+      "config_file": "densenet169_2d/config.json",
       "config_sha256": "90cedb5f09884ee6ef2ce808d53021c1e03a117710aa3158c8b3fd408cd6f2ae",
       "builder": "mhd_framework.models.create_model",
-      "implementation": "torchvision_2d"
+      "implementation": "torchvision_2d",
+      "readme_file": "densenet169_2d/README.md"
     },
     {
       "architecture_id": "densenet201_2d",
@@ -196,10 +209,11 @@
       "implementation_status": "implemented_acceptance_pending",
       "initial_framework_api": "V4",
       "weights": [],
-      "config_file": "configs/densenet201_2d.json",
+      "config_file": "densenet201_2d/config.json",
       "config_sha256": "dcb6f3f1227fef1b9570b3a09d9e24e4c9bb6320edf1868dd5d3d99c1ddf35f7",
       "builder": "mhd_framework.models.create_model",
-      "implementation": "torchvision_2d"
+      "implementation": "torchvision_2d",
+      "readme_file": "densenet201_2d/README.md"
     },
     {
       "architecture_id": "retfound_mae_vit_large_patch16_2d",
@@ -208,10 +222,11 @@
       "implementation_status": "implemented_acceptance_pending",
       "initial_framework_api": "V4",
       "weights": [],
-      "config_file": "configs/retfound_mae_vit_large_patch16_2d.json",
+      "config_file": "retfound_mae_vit_large_patch16_2d/config.json",
       "config_sha256": "28b7c4aa16f3ec041a3ee0ad85b5110bdf1b9bdc64f75c498564339a610b102b",
       "builder": "mhd_framework.models.create_model",
-      "implementation": "retfound_mae_timm_0_9_2"
+      "implementation": "retfound_mae_timm_0_9_2",
+      "readme_file": "retfound_mae_vit_large_patch16_2d/README.md"
     }
   ],
   "trained_artifacts": []

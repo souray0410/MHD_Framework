@@ -1,7 +1,8 @@
 # Models
 
 `mhd_framework.models` supplies complete task models, graph discovery, and verified
-artifacts. `models/` contains architecture metadata and the bundle schema. Model
+artifacts. Each `models/<architecture_id>/` directory contains its README and architecture
+metadata; `models/` also contains the shared catalog and bundle schema. Model
 source, trained artifacts and downstream research methods have independent lives.
 No import submits a job, reads a dataset or downloads weights.
 

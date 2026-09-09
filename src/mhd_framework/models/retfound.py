@@ -1,8 +1,4 @@
-"""RETFound-MAE ViT-L/16 classification encoder, explicit 2D implementation.
-
-Architecture/formula reference: RViMLab/RETFound_MAE models_vit.py.
-Uses timm 0.9.2 building blocks; no upstream source or weights are vendored.
-"""
+"""MHD RETFound-MAE task models."""
 from dataclasses import dataclass
 from functools import partial
 import torch
@@ -84,12 +80,7 @@ class MHDRETFound(NamedModelGraph):
         super().__init__(config,native,retfound_operations(native,config),channels,device=device)
 
     def load_pretrained_encoder(self,path,*,sha256,modality,source):
-        """Explicit pretraining transfer; task head/fc_norm remain newly initialized.
-
-        Complete fine-tuned task models instead use strict load_native_state_dict
-        or verified load_bundle. SHA and source must describe the actual local file.
-        No positional interpolation or partial encoder fallback is performed.
-        """
+        """Load a verified pretrained encoder and return its initialization receipt."""
         from .artifacts import file_sha256
         if modality not in ('cfp','oct_bscan') or not source:
             raise ValueError('Explicit CFP/OCT-B-scan initialization provenance required')
