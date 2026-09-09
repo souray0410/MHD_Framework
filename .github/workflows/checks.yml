@@ -1,5 +1,15 @@
 name: Toolbox checks
-on: [push, pull_request]
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      release_ref:
+        description: Git ref to validate
+        required: true
+        default: main
+        type: choice
+        options: [main, V4, V5]
 permissions:
   contents: read
 jobs:
@@ -11,6 +21,8 @@ jobs:
       MKL_NUM_THREADS: "2"
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.release_ref || github.ref }}
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
