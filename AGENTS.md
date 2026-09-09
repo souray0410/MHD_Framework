@@ -1,0 +1,3 @@
+# Repository instructions
+
+Read CONTRIBUTING.md and docs/development.md. Use src/mhd_framework with one API implementation per release. main is V5 development; release/v4 is the frozen research dependency. Do not reintroduce V1/V2/V3/V4/V5 folders or runtime compatibility switches. Preserve mathematical source bodies during packaging changes. Historical code stays on archived branches. Validate source, wheel installation, tests and public exports before publishing. Upgrade application commit locks only after application output/gradient/state_dict checks. No server-specific configuration or restricted data belongs here.

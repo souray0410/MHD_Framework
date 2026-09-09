@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mhd-framework"
+version = "5.0.0.dev0"
+description = "Explicit multi-hypergraph computation for PyTorch"
+readme = "README.md"
+requires-python = ">=3.11,<3.14"
+license = "MIT"
+authors = [{name = "Haoding Souray Meng"}]
+dependencies = ["torch>=2.8", "numpy", "tqdm"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "build"]
+
+[project.urls]
+Repository = "https://github.com/souray0410/MHD_Framework"
+Issues = "https://github.com/souray0410/MHD_Framework/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["mhd_framework*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests/unit"]
+addopts = "-ra -p no:cacheprovider"
