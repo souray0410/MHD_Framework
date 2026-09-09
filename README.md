@@ -4,7 +4,7 @@
 
 A PyTorch toolbox for explicit hypergraph computation. **Node** carries state, **Edge** defines operations, **Topo** specifies connectivity and level order, and **Graph** executes the computation.
 
-**This branch: V5 — development; not used by current LOOK/Radon_Bridge experiments.** The installed release selects the API, as with other Python libraries. There are no bundled parallel historical implementations and no runtime compatibility switch.
+**This branch: V4 — frozen research semantics; used by LOOK and Radon_Bridge.** The installed release selects the API, as with other Python libraries. There are no bundled parallel historical implementations and no runtime compatibility switch.
 
 ## Installation
 

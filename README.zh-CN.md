@@ -2,7 +2,7 @@
 
 基于 PyTorch 的显式超图计算工具箱。Node 携带状态，Edge 承载运算，Topo 描述连接和执行 Level，Graph 执行计算。
 
-**当前分支提供 V5。** main 维护开发中的 V5，`release/v4` 提供 LOOK 与 Radon_Bridge 使用的 V4。和 PyTorch 一样，安装哪个版本就使用哪个版本；源码不同时装入多代实现，也没有兼容开关。
+**当前分支提供 V4。** main 维护开发中的 V5，`release/v4` 提供 LOOK 与 Radon_Bridge 使用的 V4。和 PyTorch 一样，安装哪个版本就使用哪个版本；源码不同时装入多代实现，也没有兼容开关。
 
 ```bash
 python3.11 -m venv .venv

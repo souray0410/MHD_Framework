@@ -18,7 +18,7 @@ from mhd_framework.core import MHD_Edge, MHD_Graph, MHD_Node, MHD_Topo
 
 
 def node(node_id: int, name: str, value: torch.Tensor, aggregation="replace"):
-    return MHD_Node(node_id, name, MHD_Node.Message(value), aggregation="sum" if aggregation == "replace" else aggregation, memory=aggregation != "replace")
+    return MHD_Node(node_id, name, MHD_Node.Message(value), aggregation=aggregation)
 
 
 def edge(edge_id: int, name: str, function):

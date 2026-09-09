@@ -14,7 +14,7 @@ def check():
             raise ValueError("Missing public module")
     if any((ROOT / "src/mhd_framework" / name).is_dir() for name in ("v4", "v5")):
         raise ValueError("One implementation per installed release")
-    return {"structure": True, "api": "V5"}
+    return {"structure": True, "api": "V4"}
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
