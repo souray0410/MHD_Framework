@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "architecture_id": "resnet50_2d_torchvision",
+  "implementation_status": "planned",
+  "family": "resnet",
+  "depth": 50,
+  "spatial_dimensions": 2,
+  "reference_variant": "torchvision ResNet V1.5 Bottleneck",
+  "reference_builder": "torchvision.models.resnet50",
+  "block": "Bottleneck",
+  "blocks_per_stage": [
+    3,
+    4,
+    6,
+    3
+  ],
+  "expansion": 4,
+  "groups": 1,
+  "width_per_group": 64,
+  "stage_planes": [
+    64,
+    128,
+    256,
+    512
+  ],
+  "stage_output_channels": [
+    256,
+    512,
+    1024,
+    2048
+  ],
+  "activation": "ReLU",
+  "normalization": "BatchNorm2d",
+  "input_channels": 3,
+  "stem_kernel": [
+    7,
+    7
+  ],
+  "stem_stride": [
+    2,
+    2
+  ],
+  "stem_padding": [
+    3,
+    3
+  ],
+  "max_pool_kernel": [
+    3,
+    3
+  ],
+  "max_pool_stride": [
+    2,
+    2
+  ],
+  "max_pool_padding": [
+    1,
+    1
+  ],
+  "stage_strides": [
+    [
+      1,
+      1
+    ],
+    [
+      2,
+      2
+    ],
+    [
+      2,
+      2
+    ],
+    [
+      2,
+      2
+    ]
+  ],
+  "bottleneck_stride_placement": "3x3 convolution",
+  "reference_classifier_classes": 1000,
+  "dataset_task_head": "defined by separately hashed task configuration; no implicit binary head",
+  "input_geometry_and_eye_aggregation": "defined by separately hashed preprocessing and task configuration",
+  "feature_endpoint_contract": [
+    "stem",
+    "stage1",
+    "stage2",
+    "stage3",
+    "stage4",
+    "pooled"
+  ],
+  "initialization_policy": {
+    "source_weights_enum": "ResNet50_Weights.IMAGENET1K_V1",
+    "source_sha256": "must be resolved and verified before execution",
+    "conversion": "none",
+    "pretraining_claim": "ImageNet 2D reference weights"
+  },
+  "framework_acceptance": "V4 first; exact framework/adapter commits recorded by each accepted artifact"
+}

@@ -1,6 +1,6 @@
-# Model zoo and training evidence
+# Models and training evidence
 
-MHD Framework's model zoo has two independent parts: reusable neural architecture adapters and immutable records of trained weights. Core framework releases remain independently versioned. A V5 implementation, a larger cohort or a new task adds an artifact; it never replaces a V4/smaller-cohort record.
+MHD Framework's models has two independent parts: reusable neural architecture adapters and immutable records of trained weights. Core framework releases remain independently versioned. A V5 implementation, a larger cohort or a new task adds an artifact; it never replaces a V4/smaller-cohort record.
 
 ## Catalog dimensions
 
@@ -30,7 +30,7 @@ Framework source, architecture adapter revision, data version and trained artifa
 
 ## Current state
 
-The initial [catalog](../benchmarks/model_zoo/catalog.json) is a design registry, not a completed model collection. Broad ResNet/3D adapters, native dataset training and a priority dispatcher still need implementation and acceptance. The framework's existing basic model and distributed tests do not constitute that full collection.
+The initial [catalog](../models/catalog.json) is a design registry, not a completed model collection. Broad ResNet/3D adapters, native dataset training and a priority dispatcher still need implementation and acceptance. The framework's existing basic model and distributed tests do not constitute that full collection.
 
 Reference: [Torchvision ResNet definitions](https://docs.pytorch.org/vision/stable/models/resnet.html).
 
@@ -43,3 +43,13 @@ Use semantic feature endpoints (`stem`, `stage1`... or named transformer blocks)
 Separate two migration operations: (1) replay/convert the same trained model under a new framework/adapter while preserving input, task and state, and (2) train/fine-tune on a new dataset or task. The first requires a key-conversion map, complete reference receipts, source and destination SHAs and numerical tolerances; the second creates a new training artifact with a parent link. A successful load alone certifies neither. A change of preprocessing or label definition may invalidate transfer-as-baseline comparability even when tensor dimensions fit. Never overwrite the parent checkpoint or move a published release tag.
 
 Retain compact machine-readable `model_card.json`, `environment.lock.json`, `framework.lock.json`, `preprocessing.json`, `task.json`, `feature_interface.json`, `acceptance.json` and an artifact manifest with checkpoint digests alongside logs, predictions and resume files in authorized storage. Public metadata contains no participant identifiers. The same artifact resolver must work with explicit deployment roots on ws02, Ibex or another host; source code never embeds the original absolute training path.
+
+## Unique identity and configuration
+
+`models/configs/` contains explicit initial architecture candidates; these are not implemented or trained models. Each catalog entry stores the SHA256 of canonical UTF-8 JSON (`sort_keys=True`, compact separators, `ensure_ascii=False`, finite JSON numbers only). Changing block counts, dimensions, stride policy or initialization policy changes the configuration digest. `models/validate.py` verifies these digests and rejects duplicate architecture/artifact IDs.
+
+A trained record has a `training_config_id`: the canonical SHA256 of the complete architecture, framework, data, initialization and training sections. All referenced configuration files must accompany it with checked SHA256 values, including actual task/head, label order, preprocessing, optimizer/LR groups, convergence and seed. A human-readable name is an alias, never the unique key. Every independent execution gets a `run_id` UUID; resumed attempts retain that run ID and have distinct attempt IDs in the execution ledger.
+
+The immutable artifact ID is `weights_` followed by the canonical SHA256 of `{training_config_id, run_id, checkpoint_sha256}`. Different checkpoint selections or repeated independent runs therefore do not collide under a reused filename. Duplicate registration is idempotent only if all immutable provenance agrees; divergent metadata for an existing ID is rejected. Moving physical storage does not change these identities. A timestamp is useful for organizing runs but is not an artifact identifier.
+
+The future Python import namespace for model builders is `mhd_framework.models`; no placeholder builder is advertised before implementation and acceptance. The root `models/` directory currently holds the catalog, explicit configurations and provenance specification. This change does not alter installed V4 behavior or existing release tags.

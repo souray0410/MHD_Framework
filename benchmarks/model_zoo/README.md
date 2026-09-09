@@ -1,5 +1,0 @@
-# Model zoo registry
-
-The catalog separates architecture definitions from trained artifacts. Current entries are **planned**; an empty weights list means no model-zoo artifact has been accepted. Existing synthetic tests or research-application checkpoints do not automatically certify all listed architectures.
-
-See [model zoo design](../../docs/model_zoo.md). `artifact.schema.json` describes a complete trained-artifact record, not a promise that weights are public or interchangeable. Schema validation is structural only; scientific acceptance requires receipts, verified hashes and strict replay. Restricted paths and participant records do not belong in the public catalog.

@@ -11,7 +11,9 @@
       "reference": "https://docs.pytorch.org/vision/stable/models/resnet.html",
       "implementation_status": "planned",
       "initial_framework_api": "V4",
-      "weights": []
+      "weights": [],
+      "config_file": "configs/resnet18_2d_torchvision.json",
+      "config_sha256": "e67cfd94624c004dcf94208749446ee02361c8fd6f0c9a342c6c14b951ccc493"
     },
     {
       "architecture_id": "resnet34_2d_torchvision",
@@ -21,7 +23,9 @@
       "reference": "https://docs.pytorch.org/vision/stable/models/resnet.html",
       "implementation_status": "planned",
       "initial_framework_api": "V4",
-      "weights": []
+      "weights": [],
+      "config_file": "configs/resnet34_2d_torchvision.json",
+      "config_sha256": "1e442c4a0508041126e27c263a8ba14584e1335cc78c95fd453e70e03ac00037"
     },
     {
       "architecture_id": "resnet50_2d_torchvision",
@@ -31,7 +35,9 @@
       "reference": "https://docs.pytorch.org/vision/stable/models/resnet.html",
       "implementation_status": "planned",
       "initial_framework_api": "V4",
-      "weights": []
+      "weights": [],
+      "config_file": "configs/resnet50_2d_torchvision.json",
+      "config_sha256": "86960474b8cc9b12b0251a9a1a00e8a9c4e7e89eb8b577f5530022e591addec0"
     },
     {
       "architecture_id": "resnet101_2d_torchvision",
@@ -41,7 +47,9 @@
       "reference": "https://docs.pytorch.org/vision/stable/models/resnet.html",
       "implementation_status": "planned",
       "initial_framework_api": "V4",
-      "weights": []
+      "weights": [],
+      "config_file": "configs/resnet101_2d_torchvision.json",
+      "config_sha256": "a660e4df7932f0ab10a123dd3552f83737e90491b175f8e79f0245781e18b518"
     },
     {
       "architecture_id": "resnet152_2d_torchvision",
@@ -51,7 +59,9 @@
       "reference": "https://docs.pytorch.org/vision/stable/models/resnet.html",
       "implementation_status": "planned",
       "initial_framework_api": "V4",
-      "weights": []
+      "weights": [],
+      "config_file": "configs/resnet152_2d_torchvision.json",
+      "config_sha256": "7b5465af50d48b2f14a2afa27d6093ebf8c1bbc5111b5cc2651ebc6117a1fa3c"
     },
     {
       "architecture_id": "resnet18_3d_inflated",
@@ -61,7 +71,9 @@
       "reference_kind": "explicitly specified 2D-to-3D adaptation, not an official torchvision 3D ResNet pretrained release",
       "implementation_status": "planned",
       "initial_framework_api": "V4",
-      "weights": []
+      "weights": [],
+      "config_file": "configs/resnet18_3d_inflated.json",
+      "config_sha256": "0b9ecfd9d1a994d23ad187ed07ac96b013f56df1bc2fdb3d528e53ee8a26954e"
     },
     {
       "architecture_id": "resnet34_3d_inflated",
@@ -71,7 +83,9 @@
       "reference_kind": "explicitly specified 2D-to-3D adaptation, not an official torchvision 3D ResNet pretrained release",
       "implementation_status": "planned",
       "initial_framework_api": "V4",
-      "weights": []
+      "weights": [],
+      "config_file": "configs/resnet34_3d_inflated.json",
+      "config_sha256": "2d97aef6a86d4a925092ff27400ad2aa79370bd0dd01911b7cf837c36ef3ee40"
     },
     {
       "architecture_id": "resnet50_3d_inflated",
@@ -81,7 +95,9 @@
       "reference_kind": "explicitly specified 2D-to-3D adaptation, not an official torchvision 3D ResNet pretrained release",
       "implementation_status": "planned",
       "initial_framework_api": "V4",
-      "weights": []
+      "weights": [],
+      "config_file": "configs/resnet50_3d_inflated.json",
+      "config_sha256": "6861e192da0d84081885eaa817fb1d703bf623a88beee248f5b5f7c77b52ead1"
     },
     {
       "architecture_id": "resnet101_3d_inflated",
@@ -91,7 +107,9 @@
       "reference_kind": "explicitly specified 2D-to-3D adaptation, not an official torchvision 3D ResNet pretrained release",
       "implementation_status": "planned",
       "initial_framework_api": "V4",
-      "weights": []
+      "weights": [],
+      "config_file": "configs/resnet101_3d_inflated.json",
+      "config_sha256": "20a29b9a1582af848a0afa930881ad36492c6ccca23275f8007d7fc3f3a354f6"
     },
     {
       "architecture_id": "resnet152_3d_inflated",
@@ -101,7 +119,9 @@
       "reference_kind": "explicitly specified 2D-to-3D adaptation, not an official torchvision 3D ResNet pretrained release",
       "implementation_status": "planned",
       "initial_framework_api": "V4",
-      "weights": []
+      "weights": [],
+      "config_file": "configs/resnet152_3d_inflated.json",
+      "config_sha256": "78b6ebcac2baaedd1f6a636536aff2df4302374c4e8b09cf2721a858c2f78b46"
     }
   ],
   "trained_artifacts": []

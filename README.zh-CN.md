@@ -28,6 +28,6 @@ from mhd_framework.utils import MHD_Trainer
 
 开发、测试与目录说明见[英文首页](README.md)和[贡献指南](CONTRIBUTING.md)。[MIT 许可证](LICENSE)。
 
-## 模型库
+## models
 
-[模型结构与训练权重登记规范](docs/model_zoo.md)。当前初始目录处于规划阶段；结构实现、训练完成与权重可复用分别验收。
+[模型结构与训练权重登记规范](docs/models.md)。当前初始目录处于规划阶段；结构实现、训练完成与权重可复用分别验收。
