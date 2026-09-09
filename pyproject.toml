@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mhd-framework"
-version = "5.0.0.dev0"
+version = "5"
 description = "Explicit multi-hypergraph computation for PyTorch"
 readme = "README.md"
 requires-python = ">=3.11,<3.14"
