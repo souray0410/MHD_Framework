@@ -47,3 +47,5 @@ acceptance, official weight acceptance and downstream training are distinct stat
 See [shared APIs](../docs/models.md) and [bundle schema](artifact.schema.json).
 Validate the catalog with `python models/validate.py`; identity checks use
 `python -m unittest discover -s models`. Neither command reads research data.
+
+See the [model companion and reproducibility contract](REPRODUCIBILITY.md) for data-processing source, training recipes, environments, weights and replay requirements.

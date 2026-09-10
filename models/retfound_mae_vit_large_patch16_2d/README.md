@@ -72,3 +72,7 @@ This is the RETFound-MAE encoder adaptation using timm 0.9.2. The original code 
 
 [RETFound-MAE encoder](https://github.com/RViMLab/RETFound_MAE/blob/main/models_vit.py). See [complete-model APIs](../../docs/models.md) for verified bundles,
 exact-match training requests and project-owned copies, or return to [Models](../README.md).
+
+## Reproduction companion
+
+Follow the [shared reproduction contract](../REPRODUCIBILITY.md). This architecture entry does not yet publish task-trained weights or a complete public task-training companion; construction and numerical acceptance are distinct from reproducing a trained result.
