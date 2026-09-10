@@ -210,3 +210,11 @@ The optional models package contains architecture code; its core graph API is
 unchanged. Projects own token-to-grid conversion, spatial dimensionality mapping,
 losses, data selection and training protocols. Input modalities and pretrained
 weight identities must be explicit. No import downloads or starts training.
+
+## Additional modern2D families
+
+V4 models now also exposes ConvNeXt T/S/B/L, EfficientNetV2 S/M/L and register-free DINOv2 B/L fixed224 ports. They share the complete graph, named cut, strict restoration and artifact APIs. See the [architecture catalog](../models/README.md) for individual configuration and initialization semantics. Native stochastic depth, normalization and dropout are preserved; these are not purely linear models.
+
+DINOv2 depends on exactly timm0.9.2 and exposes every Transformer block. Its fixed224 task port and any declared positional resampling are distinct from the official dynamic-resolution implementation. ConvNeXt and EfficientNetV2 expose their native stage/block structure rather than arbitrary tensor dimensions. All are explicit2D models; a3D task must select an explicit3D definition.
+
+Random initialization, generic pretrained encoders and domain-pretrained encoders have separate provenance. Architecture tests establish numerical equivalence with the declared native port, not accepted trained weights or superiority on a downstream task. Resource and task acceptance belong to the separate training workflow.
