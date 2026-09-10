@@ -1,0 +1,16 @@
+{
+  "architecture_id": "openclip_vit_b16_2d",
+  "model": {
+    "name": "openclip_vit_b16",
+    "spatial_dims": 2,
+    "in_channels": 3,
+    "num_classes": 2,
+    "views": 1,
+    "image_size": 224,
+    "activation": "quick_gelu",
+    "implementation": "open_clip_2_24_visual",
+    "schema": "mhd_clip_visual_task_v1"
+  },
+  "initialization": "explicit_separate_checkpoint_or_random",
+  "spatial_dimensions": 2
+}

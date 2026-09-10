@@ -67,3 +67,20 @@ Validate the catalog with `python models/validate.py`; identity checks use
 `python -m unittest discover -s models`. Neither command reads research data.
 
 See the [model companion and reproducibility contract](REPRODUCIBILITY.md) for data-processing source, training recipes, environments, weights and replay requirements.
+
+## Additional explicit encoders
+
+- [convnextv2_base_2d](convnextv2_base_2d/README.md)
+- [convnextv2_large_2d](convnextv2_large_2d/README.md)
+- [deit3_base_patch16_224_2d](deit3_base_patch16_224_2d/README.md)
+- [deit3_large_patch16_224_2d](deit3_large_patch16_224_2d/README.md)
+- [mae_vit_base_patch16_2d](mae_vit_base_patch16_2d/README.md)
+- [mae_vit_large_patch16_2d](mae_vit_large_patch16_2d/README.md)
+- [beit_base_patch16_224_2d](beit_base_patch16_224_2d/README.md)
+- [beit_large_patch16_224_2d](beit_large_patch16_224_2d/README.md)
+- [openclip_vit_b16_2d](openclip_vit_b16_2d/README.md)
+- [openclip_vit_l14_2d](openclip_vit_l14_2d/README.md)
+- [medicalnet_resnet50_3d](medicalnet_resnet50_3d/README.md)
+- [medicalnet_resnet101_3d](medicalnet_resnet101_3d/README.md)
+- [monai_densenet121_3d](monai_densenet121_3d/README.md)
+- [swin_unetr_encoder_3d](swin_unetr_encoder_3d/README.md)

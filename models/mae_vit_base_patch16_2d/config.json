@@ -1,0 +1,15 @@
+{
+  "architecture_id": "mae_vit_base_patch16_2d",
+  "model": {
+    "name": "mae_vit_base_patch16",
+    "spatial_dims": 2,
+    "in_channels": 3,
+    "num_classes": 2,
+    "views": 1,
+    "image_size": 224,
+    "implementation": "timm_0_9_2_explicit_task",
+    "schema": "mhd_timm_encoder_task_v1"
+  },
+  "initialization": "explicit_separate_checkpoint_or_random",
+  "spatial_dimensions": 2
+}

@@ -1,0 +1,30 @@
+{
+  "status": "passed",
+  "scope": "architecture_numerical_and_packaging_not_clinical",
+  "torch": "2.8.0+cu128",
+  "torchvision": "0.23.0",
+  "timm": "0.9.2",
+  "monai": "1.5.1",
+  "open_clip_torch": "2.24.0",
+  "device": "NVIDIA RTX 5000 Ada Generation",
+  "framework_suite_tests": 77,
+  "extended_tests": 20,
+  "catalog_tests": 4,
+  "variants": 14,
+  "core_modified": false,
+  "fp32_convnext_v2_native_gradients": "rtol1e-4_atol1e-6",
+  "convnext_v2_strict_native_adam_parity_dtype": "float64",
+  "other_variants_native_optimizer_dtype": "float32",
+  "volume_fixture": [
+    2,
+    1,
+    32,
+    64,
+    64
+  ],
+  "pool_ties_and_geometry": true,
+  "exact_graph_checkpoint_reload": true,
+  "installed_wheel": "extended_wheel_v4.json",
+  "research_data_used": false,
+  "test_dataset_used": false
+}

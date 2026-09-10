@@ -1,0 +1,15 @@
+{
+  "architecture_id": "medicalnet_resnet101_3d",
+  "model": {
+    "name": "medicalnet_resnet101_3d",
+    "spatial_dims": 3,
+    "in_channels": 1,
+    "num_classes": 2,
+    "views": 1,
+    "pooling": "deterministic_equivalent_v1",
+    "implementation": "medicalnet20f76aa_monai1_5_1_explicit",
+    "schema": "mhd_volume_encoder_task_v1"
+  },
+  "initialization": "explicit_separate_checkpoint_or_random",
+  "spatial_dimensions": 3
+}

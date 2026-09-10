@@ -1,0 +1,21 @@
+{
+  "status": "passed",
+  "installed_from_wheel": true,
+  "models": [
+    "convnextv2_base",
+    "convnextv2_large",
+    "deit3_base_patch16_224",
+    "deit3_large_patch16_224",
+    "mae_vit_base_patch16",
+    "mae_vit_large_patch16",
+    "beit_base_patch16_224",
+    "beit_large_patch16_224",
+    "openclip_vit_b16",
+    "openclip_vit_l14",
+    "medicalnet_resnet50_3d",
+    "medicalnet_resnet101_3d",
+    "monai_densenet121_3d",
+    "swin_unetr_encoder_3d"
+  ],
+  "test_used": false
+}

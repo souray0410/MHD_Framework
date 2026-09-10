@@ -15,6 +15,7 @@ dependencies = ["torch>=2.8", "numpy", "tqdm"]
 [project.optional-dependencies]
 dev = ["pytest>=8", "build"]
 models = ["torchvision==0.23.0", "timm==0.9.2"]
+models_extended = ["torchvision==0.23.0", "timm==0.9.2", "monai==1.5.1", "open_clip_torch==2.24.0", "einops==0.8.1"]
 
 [project.urls]
 Repository = "https://github.com/souray0410/MHD_Framework"
@@ -27,3 +28,6 @@ include = ["mhd_framework*"]
 [tool.pytest.ini_options]
 testpaths = ["tests/unit"]
 addopts = "-ra -p no:cacheprovider"
+
+[tool.setuptools.package-data]
+"mhd_framework.models" = ["licenses/*.txt", "licenses/*.json"]
