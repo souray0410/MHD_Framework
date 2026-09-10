@@ -196,3 +196,17 @@ available for explicitly implemented restoration procedures.
 Input exports and study recipes belong outside the toolbox. A new task/dataset
 creates a new request and README, even when the architecture is identical. No
 clinical labels, participant lists or research project logic belong in this package.
+
+## ViT and Swin
+
+`create_model({"name":"vit_b_16"})` and `create_model({"name":"swin_b"})`
+construct complete random-initialized task graphs. ViT-B/16 and ViT-L/16, and
+Swin-T/S/B are separate named2D implementations using torchvision0.23.0. Their
+model directories document block/stage endpoints, tensor layout and initialization.
+ViT uses normalized CLS features; RETFound-MAE uses mean non-CLS tokens followed
+by normalization. Equal encoder widths do not make those architectures identical.
+
+The optional models package contains architecture code; its core graph API is
+unchanged. Projects own token-to-grid conversion, spatial dimensionality mapping,
+losses, data selection and training protocols. Input modalities and pretrained
+weight identities must be explicit. No import downloads or starts training.

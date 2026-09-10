@@ -207,7 +207,7 @@ def publish_bundle(store, path, request):
 def runtime_source_sha256():
     package = Path(__file__).resolve().parents[1]
     return {name: file_sha256(package/name) for name in
-            ('__init__.py', 'core.py', 'utils.py', 'models/resnet.py', 'models/graph.py', 'models/densenet.py', 'models/retfound.py', 'models/artifacts.py', 'models/recipes.py', 'models/training.py', 'models/__init__.py')}
+            ('__init__.py', 'core.py', 'utils.py', 'models/resnet.py', 'models/graph.py', 'models/densenet.py', 'models/retfound.py', 'models/vision_transformer.py', 'models/artifacts.py', 'models/recipes.py', 'models/training.py', 'models/__init__.py')}
 
 
 def verify_runtime(framework):

@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "architecture_id": "swin_b_2d_torchvision",
+  "family": "swin",
+  "spatial_dimensions": 2,
+  "implementation": "torchvision_swin_0_23",
+  "implementation_status": "implemented_acceptance_pending",
+  "task_configuration": {
+    "name": "swin_b",
+    "spatial_dims": 2,
+    "in_channels": 3,
+    "num_classes": 2,
+    "views": 1
+  },
+  "initialization": "Independent random or explicitly identified local encoder weights; no included trained weights",
+  "transformer_blocks": 24,
+  "initial_width": 128,
+  "input_layout": "NCHW",
+  "intermediate_layout": "NHWC before channels_first",
+  "pooling": "LayerNorm then global spatial mean"
+}

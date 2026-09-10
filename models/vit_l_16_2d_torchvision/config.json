@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "architecture_id": "vit_l_16_2d_torchvision",
+  "family": "vit",
+  "spatial_dimensions": 2,
+  "implementation": "torchvision_vit_0_23",
+  "implementation_status": "implemented_acceptance_pending",
+  "task_configuration": {
+    "name": "vit_l_16",
+    "spatial_dims": 2,
+    "in_channels": 3,
+    "num_classes": 2,
+    "views": 1
+  },
+  "initialization": "Independent random or explicitly identified local encoder weights; no included trained weights",
+  "transformer_blocks": 24,
+  "initial_width": 1024,
+  "input_layout": "NCHW",
+  "intermediate_layout": "NLC with leading CLS",
+  "pooling": "LayerNorm then CLS selection"
+}

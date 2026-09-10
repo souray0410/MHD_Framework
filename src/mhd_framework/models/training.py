@@ -61,7 +61,7 @@ def epoch_indices(length,rank,world,seed,epoch):
 
 def optimizer_for(model, training):
     native=model._native_reference
-    head=next(getattr(native,key) for key in ('fc','classifier','head') if hasattr(native,key))
+    head=next(getattr(native,key) for key in ('fc','classifier','head','heads') if hasattr(native,key))
     head_ids={id(p) for p in head.parameters()}
     backbone=[p for p in model.parameters() if id(p) not in head_ids]
     groups=[{'params':backbone,'lr':training['backbone_lr']},
