@@ -8,14 +8,19 @@ from mhd_framework.models.training import optimizer_for
 torch.set_num_threads(2)
 
 
-@pytest.mark.parametrize('name', ['vit_b_16', 'swin_t'])
+@pytest.mark.parametrize('name', ['vit_b_16', 'swin_t', 'convnext_tiny', 'efficientnet_v2_s', 'vit_base_patch14_dinov2'])
 def test_transformer_native_output_gradient_update_and_restore(name):
+    torch.use_deterministic_algorithms(True)
+    torch.backends.cudnn.benchmark=False
+    torch.backends.cudnn.deterministic=True
+    torch.backends.cuda.matmul.allow_tf32=False
+    torch.backends.cudnn.allow_tf32=False
     device = os.environ.get('MHD_MODEL_TEST_DEVICE', 'cpu')
     torch.manual_seed(194)
     graph = create_model({'name':name}, device=device)
     native = copy.deepcopy(graph._native_reference).to(device)
     optimizer = optimizer_for(graph, {'backbone_lr':1e-4,'head_lr':1e-3,'weight_decay':.01})
-    head = native.heads if name.startswith('vit') else native.head
+    head = next(getattr(native,k) for k in ('fc','classifier','head','heads') if hasattr(native,k))
     ids = {id(p) for p in head.parameters()}
     reference_optimizer = torch.optim.AdamW([
         {'params':[p for p in native.parameters() if id(p) not in ids], 'lr':1e-4},

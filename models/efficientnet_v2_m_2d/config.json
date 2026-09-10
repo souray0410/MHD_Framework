@@ -1,0 +1,14 @@
+{
+  "architecture_id": "efficientnet_v2_m_2d",
+  "model": {
+    "name": "efficientnet_v2_m",
+    "spatial_dims": 2,
+    "in_channels": 3,
+    "num_classes": 2,
+    "views": 1,
+    "implementation": "torchvision_efficientnet_v2_0_23",
+    "schema": "mhd_efficientnet_v2_task_v1"
+  },
+  "initialization": "explicit_separate_checkpoint_or_random",
+  "spatial_dimensions": 2
+}

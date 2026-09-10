@@ -32,7 +32,7 @@ class IdentityTests(unittest.TestCase):
 
     def test_catalog_and_tampering(self):
         source = Path(__file__).resolve().parent
-        self.assertEqual(validate.validate(source)['architectures'], 15)
+        self.assertEqual(validate.validate(source)['architectures'], len(json.loads((source/'catalog.json').read_text())['architectures']))
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             shutil.copy(source / 'catalog.json', root)

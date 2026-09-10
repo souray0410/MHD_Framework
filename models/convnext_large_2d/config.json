@@ -1,0 +1,14 @@
+{
+  "architecture_id": "convnext_large_2d",
+  "model": {
+    "name": "convnext_large",
+    "spatial_dims": 2,
+    "in_channels": 3,
+    "num_classes": 2,
+    "views": 1,
+    "implementation": "torchvision_convnext_0_23",
+    "schema": "mhd_convnext_task_v1"
+  },
+  "initialization": "explicit_separate_checkpoint_or_random",
+  "spatial_dimensions": 2
+}
