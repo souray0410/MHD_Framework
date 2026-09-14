@@ -218,3 +218,19 @@ V4 models now also exposes ConvNeXt T/S/B/L, EfficientNetV2 S/M/L and register-f
 DINOv2 depends on exactly timm0.9.2 and exposes every Transformer block. Its fixed224 task port and any declared positional resampling are distinct from the official dynamic-resolution implementation. ConvNeXt and EfficientNetV2 expose their native stage/block structure rather than arbitrary tensor dimensions. All are explicit2D models; a3D task must select an explicit3D definition.
 
 Random initialization, generic pretrained encoders and domain-pretrained encoders have separate provenance. Architecture tests establish numerical equivalence with the declared native port, not accepted trained weights or superiority on a downstream task. Resource and task acceptance belong to the separate training workflow.
+
+## Companion training workflows
+
+**MHD_Models** ([repository](https://github.com/souray0410/MHD_Models), currently access-restricted) is the separately maintained companion for training recipes, run
+acceptance and complete trained-artifact catalogs. Architecture implementations
+remain in the optional `mhd_framework.models` package; the core package does not
+import or require the companion. The companion is currently privately maintained,
+not an available public reproduction release.
+
+Framework and companion releases have independent histories. Every trained
+artifact binds an exact framework commit, architecture/configuration, training
+source revision and environment. A framework upgrade requires explicit numerical
+and checkpoint acceptance; a matching major-version label alone is insufficient.
+Existing artifacts retain their original identities and version locks. Reviewed
+public companion releases must ship the corresponding executable recipes and
+permitted artifact references using the same reproduction contract.
