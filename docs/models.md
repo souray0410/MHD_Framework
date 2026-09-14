@@ -53,3 +53,19 @@ A trained record has a `training_config_id`: the canonical SHA256 of the complet
 The immutable artifact ID is `weights_` followed by the canonical SHA256 of `{training_config_id, run_id, checkpoint_sha256}`. Different checkpoint selections or repeated independent runs therefore do not collide under a reused filename. Duplicate registration is idempotent only if all immutable provenance agrees; divergent metadata for an existing ID is rejected. Moving physical storage does not change these identities. A timestamp is useful for organizing runs but is not an artifact identifier.
 
 The future Python import namespace for model builders is `mhd_framework.models`; no placeholder builder is advertised before implementation and acceptance. The root `models/` directory currently holds the catalog, explicit configurations and provenance specification. This change does not alter installed V4 behavior or existing release tags.
+
+## Companion training workflows
+
+**MHD_Models** ([repository](https://github.com/souray0410/MHD_Models), currently access-restricted) is the separately maintained companion for training recipes, run
+acceptance and complete trained-artifact catalogs. Architecture implementations
+remain in the optional `mhd_framework.models` package; the core package does not
+import or require the companion. The companion is currently privately maintained,
+not an available public reproduction release.
+
+Framework and companion releases have independent histories. Every trained
+artifact binds an exact framework commit, architecture/configuration, training
+source revision and environment. A framework upgrade requires explicit numerical
+and checkpoint acceptance; a matching major-version label alone is insufficient.
+Existing artifacts retain their original identities and version locks. Reviewed
+public companion releases must ship the corresponding executable recipes and
+permitted artifact references using the same reproduction contract.
