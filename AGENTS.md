@@ -1,3 +1,5 @@
 # Repository instructions
 
 Read CONTRIBUTING.md and docs/development.md. Use src/mhd_framework with one API implementation per release. main is V5 development; release/v4 is the frozen research dependency. Do not reintroduce V1/V2/V3/V4/V5 folders or runtime compatibility switches. Preserve mathematical source bodies during packaging changes. Historical code stays on archived branches. Validate source, wheel installation, tests and public exports before publishing. Upgrade application commit locks only after application output/gradient/state_dict checks. No server-specific configuration or restricted data belongs here.
+
+Maintain docs/handoff/status.json alongside its README after material evidence review. Preserve goal, phase/dependencies, exact source/evidence dates, separate planned/implemented/deployed/running/accepted states, limitations and traceable evidence. Repository-only checks cannot certify runtime or scientific completion. Do not renew verification timestamps just because a polling request succeeded; no restricted data or credentials belong in status records.
