@@ -1,0 +1,36 @@
+{
+  "schema": "research_project_status_v1",
+  "project": "MHD_Framework",
+  "goal": "Versioned explicit hypergraph computation framework",
+  "phase": "v5_development_v4_release",
+  "next_acceptance": "Version-specific source, wheel and runtime acceptance",
+  "dependencies": [
+    "Version-pinned dependency and tests"
+  ],
+  "source_commit": "de38a4254d906b705b0f10326282eef357e0220a",
+  "evidence_cutoff": "2026-09-16T09:39:44.263419+00:00",
+  "verified_at": "2026-09-16T09:39:44.263419+00:00",
+  "verification_scope": "source_review_only",
+  "layers": {
+    "planned": "documented",
+    "implemented": "partial",
+    "deployed": "not_rechecked",
+    "running": "not_rechecked",
+    "accepted": "not_rechecked"
+  },
+  "results": [],
+  "limitations": [
+    "Repository inspection is not GPU runtime acceptance"
+  ],
+  "blockers": [],
+  "actions": [
+    "Source and current handoff inspected; no scientific execution changed."
+  ],
+  "decisions": [],
+  "evidence": [
+    {
+      "label": "Reviewed source snapshot",
+      "url": "https://github.com/souray0410/MHD_Framework/blob/de38a4254d906b705b0f10326282eef357e0220a/README.md"
+    }
+  ]
+}
