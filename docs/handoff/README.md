@@ -19,3 +19,13 @@ shared-memory transport is recorded rather than hidden.
 V5 remains a preview. Production artifacts and consumers have not been switched;
 Ibex incidents and cross-platform recovery remain rollout gates. V4 is untouched.
 Do not replace the tag or announce completion from these synthetic checks alone.
+
+## Exact candidate commit accepted
+
+Commit `a9e6b41cdf646a0775185386f5260e95ee0b9083` passed GitHub CI
+35730436334, all 15 two-GPU fixtures, and the full single-GPU suite
+(202 passed, 3 unsupported CPU FP16 skips). The built wheel was installed in a
+new environment outside the repository and both examples passed.
+[Exact evidence](../acceptance/20260922/exact_commit_a9e6b41.json) includes source
+archive and package SHA256 plus environment pins. This closes the candidate
+framework fixture gates, not production migration or publication.
