@@ -1,0 +1,348 @@
+{
+  "source": {
+    "commit": "c78cfbdc9ec01e4dc1dc8ee04d04b2e6a8446808",
+    "archive_sha256": "1ff4b277abdbe4d0091c85e050c26f994ca605f7425ceba19825175b3441415c",
+    "NCCL_P2P_DISABLE": "1"
+  },
+  "matrix": [
+    {
+      "mode": "ddp",
+      "precision": "fp32",
+      "returncode": 0
+    },
+    {
+      "mode": "fsdp2",
+      "precision": "fp32",
+      "returncode": 0
+    },
+    {
+      "mode": "tp",
+      "precision": "fp32",
+      "returncode": 0
+    },
+    {
+      "mode": "gpipe",
+      "precision": "fp32",
+      "returncode": 0
+    },
+    {
+      "mode": "1f1b",
+      "precision": "fp32",
+      "returncode": 0
+    },
+    {
+      "mode": "ddp",
+      "precision": "bf16",
+      "returncode": 0
+    },
+    {
+      "mode": "fsdp2",
+      "precision": "bf16",
+      "returncode": 0
+    },
+    {
+      "mode": "tp",
+      "precision": "bf16",
+      "returncode": 0
+    },
+    {
+      "mode": "gpipe",
+      "precision": "bf16",
+      "returncode": 0
+    },
+    {
+      "mode": "1f1b",
+      "precision": "bf16",
+      "returncode": 0
+    },
+    {
+      "mode": "ddp",
+      "precision": "fp16",
+      "returncode": 0
+    },
+    {
+      "mode": "fsdp2",
+      "precision": "fp16",
+      "returncode": 0
+    },
+    {
+      "mode": "tp",
+      "precision": "fp16",
+      "returncode": 0
+    },
+    {
+      "mode": "gpipe",
+      "precision": "fp16",
+      "returncode": 0
+    },
+    {
+      "mode": "1f1b",
+      "precision": "fp16",
+      "returncode": 0
+    }
+  ],
+  "receipts": {
+    "ddp_fp32": {
+      "mode": "ddp",
+      "precision": "fp32",
+      "steps": 6,
+      "torch": "2.8.0+cu128",
+      "cuda": "12.8",
+      "device": "NVIDIA RTX 5000 Ada Generation",
+      "world_size": 2,
+      "save_after": 4,
+      "native_parity": true,
+      "checkpoint_resume": true,
+      "single_cpu_inference": true,
+      "rtol": 1e-05,
+      "atol": 1e-06
+    },
+    "ddp_fp16": {
+      "mode": "ddp",
+      "precision": "fp16",
+      "steps": 6,
+      "torch": "2.8.0+cu128",
+      "cuda": "12.8",
+      "device": "NVIDIA RTX 5000 Ada Generation",
+      "world_size": 2,
+      "save_after": 4,
+      "native_parity": true,
+      "checkpoint_resume": true,
+      "single_cpu_inference": true,
+      "rtol": 0.02,
+      "atol": 0.002
+    },
+    "fsdp2_fp32": {
+      "mode": "fsdp2",
+      "precision": "fp32",
+      "steps": 6,
+      "torch": "2.8.0+cu128",
+      "cuda": "12.8",
+      "device": "NVIDIA RTX 5000 Ada Generation",
+      "world_size": 2,
+      "save_after": 4,
+      "native_parity": true,
+      "checkpoint_resume": true,
+      "single_cpu_inference": true,
+      "rtol": 1e-05,
+      "atol": 1e-06
+    },
+    "ddp_bf16": {
+      "mode": "ddp",
+      "precision": "bf16",
+      "steps": 6,
+      "torch": "2.8.0+cu128",
+      "cuda": "12.8",
+      "device": "NVIDIA RTX 5000 Ada Generation",
+      "world_size": 2,
+      "save_after": 4,
+      "native_parity": true,
+      "checkpoint_resume": true,
+      "single_cpu_inference": true,
+      "rtol": 0.02,
+      "atol": 0.002
+    },
+    "1f1b_fp16": {
+      "mode": "1f1b",
+      "precision": "fp16",
+      "steps": 6,
+      "torch": "2.8.0+cu128",
+      "cuda": "12.8",
+      "device": "NVIDIA RTX 5000 Ada Generation",
+      "world_size": 2,
+      "save_after": 4,
+      "native_parity": true,
+      "checkpoint_resume": true,
+      "single_cpu_inference": true,
+      "rtol": 0.02,
+      "atol": 0.002
+    },
+    "gpipe_fp32": {
+      "mode": "gpipe",
+      "precision": "fp32",
+      "steps": 6,
+      "torch": "2.8.0+cu128",
+      "cuda": "12.8",
+      "device": "NVIDIA RTX 5000 Ada Generation",
+      "world_size": 2,
+      "save_after": 4,
+      "native_parity": true,
+      "checkpoint_resume": true,
+      "single_cpu_inference": true,
+      "rtol": 1e-05,
+      "atol": 1e-06
+    },
+    "1f1b_fp32": {
+      "mode": "1f1b",
+      "precision": "fp32",
+      "steps": 6,
+      "torch": "2.8.0+cu128",
+      "cuda": "12.8",
+      "device": "NVIDIA RTX 5000 Ada Generation",
+      "world_size": 2,
+      "save_after": 4,
+      "native_parity": true,
+      "checkpoint_resume": true,
+      "single_cpu_inference": true,
+      "rtol": 1e-05,
+      "atol": 1e-06
+    },
+    "fsdp2_bf16": {
+      "mode": "fsdp2",
+      "precision": "bf16",
+      "steps": 6,
+      "torch": "2.8.0+cu128",
+      "cuda": "12.8",
+      "device": "NVIDIA RTX 5000 Ada Generation",
+      "world_size": 2,
+      "save_after": 4,
+      "native_parity": true,
+      "checkpoint_resume": true,
+      "single_cpu_inference": true,
+      "rtol": 0.02,
+      "atol": 0.002
+    },
+    "1f1b_bf16": {
+      "mode": "1f1b",
+      "precision": "bf16",
+      "steps": 6,
+      "torch": "2.8.0+cu128",
+      "cuda": "12.8",
+      "device": "NVIDIA RTX 5000 Ada Generation",
+      "world_size": 2,
+      "save_after": 4,
+      "native_parity": true,
+      "checkpoint_resume": true,
+      "single_cpu_inference": true,
+      "rtol": 0.02,
+      "atol": 0.002
+    },
+    "tp_fp32": {
+      "mode": "tp",
+      "precision": "fp32",
+      "steps": 6,
+      "torch": "2.8.0+cu128",
+      "cuda": "12.8",
+      "device": "NVIDIA RTX 5000 Ada Generation",
+      "world_size": 2,
+      "save_after": 4,
+      "native_parity": true,
+      "checkpoint_resume": true,
+      "single_cpu_inference": true,
+      "rtol": 1e-05,
+      "atol": 1e-06
+    },
+    "gpipe_fp16": {
+      "mode": "gpipe",
+      "precision": "fp16",
+      "steps": 6,
+      "torch": "2.8.0+cu128",
+      "cuda": "12.8",
+      "device": "NVIDIA RTX 5000 Ada Generation",
+      "world_size": 2,
+      "save_after": 4,
+      "native_parity": true,
+      "checkpoint_resume": true,
+      "single_cpu_inference": true,
+      "rtol": 0.02,
+      "atol": 0.002
+    },
+    "tp_bf16": {
+      "mode": "tp",
+      "precision": "bf16",
+      "steps": 6,
+      "torch": "2.8.0+cu128",
+      "cuda": "12.8",
+      "device": "NVIDIA RTX 5000 Ada Generation",
+      "world_size": 2,
+      "save_after": 4,
+      "native_parity": true,
+      "checkpoint_resume": true,
+      "single_cpu_inference": true,
+      "rtol": 0.02,
+      "atol": 0.002
+    },
+    "fsdp2_fp16": {
+      "mode": "fsdp2",
+      "precision": "fp16",
+      "steps": 6,
+      "torch": "2.8.0+cu128",
+      "cuda": "12.8",
+      "device": "NVIDIA RTX 5000 Ada Generation",
+      "world_size": 2,
+      "save_after": 4,
+      "native_parity": true,
+      "checkpoint_resume": true,
+      "single_cpu_inference": true,
+      "rtol": 0.02,
+      "atol": 0.002
+    },
+    "tp_fp16": {
+      "mode": "tp",
+      "precision": "fp16",
+      "steps": 6,
+      "torch": "2.8.0+cu128",
+      "cuda": "12.8",
+      "device": "NVIDIA RTX 5000 Ada Generation",
+      "world_size": 2,
+      "save_after": 4,
+      "native_parity": true,
+      "checkpoint_resume": true,
+      "single_cpu_inference": true,
+      "rtol": 0.02,
+      "atol": 0.002
+    },
+    "gpipe_bf16": {
+      "mode": "gpipe",
+      "precision": "bf16",
+      "steps": 6,
+      "torch": "2.8.0+cu128",
+      "cuda": "12.8",
+      "device": "NVIDIA RTX 5000 Ada Generation",
+      "world_size": 2,
+      "save_after": 4,
+      "native_parity": true,
+      "checkpoint_resume": true,
+      "single_cpu_inference": true,
+      "rtol": 0.02,
+      "atol": 0.002
+    }
+  },
+  "single_gpu": {
+    "returncode": 0,
+    "passed": 203,
+    "skipped": 3,
+    "skipped_reason": "CPU FP16 outside trainer contract"
+  },
+  "environment": "anyio==4.15.1\nbuild==1.6.1\ncertifi==2026.7.22\nclick==8.5.0\ncloudpickle==3.1.2\ncontourpy==1.4.0\ncycler==0.12.1\neinops==0.8.1\nfilelock==4.0.1\nfonttools==4.65.0\nfsspec==2026.9.0\nftfy==6.3.1\nh11==0.16.0\nhf-xet==1.6.0\nhttpcore==1.0.9\nhttpx==0.28.1\nhuggingface_hub==1.32.0\nidna==3.20\niniconfig==2.3.0\nJinja2==3.1.6\njoblib==1.6.0\nkiwisolver==1.5.1\nMarkupSafe==3.0.3\nmatplotlib==3.11.2\nmonai==1.5.1\nmpmath==1.3.0\nnarwhals==2.26.0\nnetworkx==3.7\nnumpy==2.5.3\nnvidia-cublas-cu12==12.8.4.1\nnvidia-cuda-cupti-cu12==12.8.90\nnvidia-cuda-nvrtc-cu12==12.8.93\nnvidia-cuda-runtime-cu12==12.8.90\nnvidia-cudnn-cu12==9.10.2.21\nnvidia-cufft-cu12==11.3.3.83\nnvidia-cufile-cu12==1.13.1.3\nnvidia-curand-cu12==10.3.9.90\nnvidia-cusolver-cu12==11.7.3.90\nnvidia-cusparse-cu12==12.5.8.93\nnvidia-cusparselt-cu12==0.7.1\nnvidia-nccl-cu12==2.27.3\nnvidia-nvjitlink-cu12==12.8.93\nnvidia-nvtx-cu12==12.8.90\nopen-clip-torch==2.24.0\npackaging==26.3\npandas==3.0.6\npillow==12.3.0\npluggy==1.6.0\nprotobuf==7.36.2\npsutil==7.2.2\nPygments==2.21.0\npyparsing==3.3.3\npyproject_hooks==1.3.3\npytest==9.1.1\npython-dateutil==2.9.0.post0\nPyYAML==6.0.3\nregex==2026.9.10\nsafetensors==0.8.0\nscikit-learn==1.9.1\nscipy==1.18.1\nsentencepiece==0.2.2\nsetuptools==84.0.0\nsix==1.17.0\nsympy==1.14.0\nthreadpoolctl==3.7.0\ntimm==0.9.2\ntorch==2.8.0\ntorchvision==0.23.0\ntqdm==4.70.1\ntriton==3.4.0\ntyping_extensions==4.16.0\nwcwidth==0.8.4\n",
+  "cpu": {
+    "passed": 172,
+    "skipped": 34,
+    "torch": "2.8.0",
+    "command": "PYTHONPATH=src OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 python scripts/manage.py test",
+    "log_sha256": "84863ab975b664dff880c58046b19e77e01bf9557f6cf6feeddc99d089b29cae"
+  },
+  "wheel_outside_install": {
+    "accepted": true,
+    "isolated_new_venv": true,
+    "isolated_python_flag": "-I",
+    "examples": [
+      "basic.py",
+      "model.py"
+    ],
+    "torch": "2.8.0",
+    "assets": {
+      "mhd_framework-5-py3-none-any.whl": "fb579bdbcdc5f7b4f2968ea0103339b043b817aff4733c4a743f361c1f7a7f05",
+      "mhd_framework-5.tar.gz": "7f3344b2216aaf4b8ebff6e241776b802f6615cd0f5d03bb6214c64ee1120993"
+    }
+  },
+  "limitations": [
+    "Synthetic framework acceptance; production consumers and A100/Ada continuation remain pending.",
+    "Not a published GitHub release; post-release download checks remain pending."
+  ],
+  "archive_git_byte_equality_files": 82,
+  "ci": {
+    "run_id": 35731730886,
+    "conclusion": "success"
+  }
+}
