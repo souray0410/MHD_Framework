@@ -1,0 +1,6 @@
+{
+  "repository": "https://github.com/Tencent/MedicalNet",
+  "commit": "20f76aaab5cac8056eaf50b79ed97c09dbfbd3bd",
+  "file": "models/resnet.py",
+  "sha256": "b2027785ff2fcfb86147c75509d0abc272edeb820bfca6ce9ba56cd122b768ca"
+}

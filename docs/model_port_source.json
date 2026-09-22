@@ -1,0 +1,27 @@
+{
+  "source_commit": "c0a27abb3e0f2153bfd273b1d05d5b7dae9784f0",
+  "files": {
+    "src/mhd_framework/models/__init__.py": "1118dec7799b38c6f639d10d6b6550068713e24ee239b8a04d31184e93f49ff8",
+    "src/mhd_framework/models/_medicalnet.py": "b2027785ff2fcfb86147c75509d0abc272edeb820bfca6ce9ba56cd122b768ca",
+    "src/mhd_framework/models/artifacts.py": "666d3fc2f0bcb3628daa0bb0944c40e42e06d4a709a8651d72424c49e09f3255",
+    "src/mhd_framework/models/clip_visual.py": "aac4e535dc2d6adcd96ddee9c27255c911679348eb289ef525e78a9f3b102b99",
+    "src/mhd_framework/models/densenet.py": "4a0fa423120b41b76c28babff907eb8dba096a814ebdd4114c66ac21f87326cb",
+    "src/mhd_framework/models/dinov2.py": "720c4e92e54806aa10e914bd0b0d95117a2b4290c7c230abd3223f6587336961",
+    "src/mhd_framework/models/graph.py": "d9f4e32de3f9b9dde9d723b3cde2494a31cf4e3c38599d9bdbe0f3e09e114cde",
+    "src/mhd_framework/models/licenses/MedicalNet-source.json": "2f9fd560fe257d8036c7838411f9d946d8146723a18543e9746ed125267ed315",
+    "src/mhd_framework/models/licenses/MedicalNet.txt": "3dca9a898552631f35f9cc2eb8b284cabd54f27f00e474eb3ea2ed0669656fea",
+    "src/mhd_framework/models/modern_cnn.py": "5834fe617f43aa47cd099b5f5a197b9e453a43e53700e651140dac15cfda7138",
+    "src/mhd_framework/models/recipes.py": "d0025f24c938c4a25257b215d6274a4b07c9f6074d0f4acf19995a01cc7aaa1e",
+    "src/mhd_framework/models/resnet.py": "bc9f8a35f55d5b67c16de1f37d6ee4ac2d54baa1543e3852f49079c4d1c05eba",
+    "src/mhd_framework/models/retfound.py": "0be59f6e3b2fcdcee1b26d0d3ebfe9c63182c4d1913dfe1b3ea06762693a7e07",
+    "src/mhd_framework/models/timm_encoders.py": "ff51ba8a0b5a18a10dd6247ac6ba3b92a630430f72ccfdf8c1f7d379b917c6b9",
+    "src/mhd_framework/models/training.py": "88b06487bdf46924fa73c1880c12c4a0ee36062c28b30cec39a8c0c57ad80957",
+    "src/mhd_framework/models/vision_transformer.py": "a21d0ec3e8454d33995bfae318872a18a0913df50da815a3c9b736706e4ec2d3",
+    "src/mhd_framework/models/volume_encoders.py": "4a0c383a4edb67a245b1ac35198a8adc533469a0a7f0bd03e088075fab16dc3a"
+  },
+  "hash_semantics": "SHA256 of original V4 source, before the declared V5 adaptations",
+  "v5_adaptations": {
+    "graph.py,resnet.py": "One-producer node messages use sum with memory=False instead of removed replace. Node IDs, feature endpoints, module sharing and model arithmetic are preserved.",
+    "artifacts.py": "Current artifact requests require V5; original V4 artifacts require a separate accepted conversion."
+  }
+}

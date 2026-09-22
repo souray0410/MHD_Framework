@@ -23,7 +23,8 @@ from tqdm import tqdm
 import json
 import warnings
 import weakref
-from contextlib import nullcontext
+import io
+from contextlib import nullcontext, contextmanager
 
 from .core import (
     MHD_Node, MHD_Edge, MHD_Topo, MHD_Graph,
@@ -90,7 +91,7 @@ class MHD_ParallelConfig:
             )
         )
         if active_families > 1:
-            raise ValueError("V4 每次运行只允许 DDP/FSDP2、TP、PP 中一个并行族")
+            raise ValueError("V5 每次运行只允许 DDP/FSDP2、TP、PP 中一个并行族")
         if self.tensor_parallel_size > 1 and not self.tensor_parallel_plan:
             raise ValueError("启用 Tensor Parallel 时必须显式提供 tensor_parallel_plan")
         if self.pipeline_size > 1 and not self.pipeline_stages:
@@ -373,6 +374,8 @@ class _MHD_PipelineModel(nn.Module):
         device: torch.device,
         graph: MHD_Graph,
         output_nodes: Sequence[str],
+        loss_function: Any = None,
+        microbatches: int = 1,
     ) -> None:
         super().__init__()
         self._graph_ref = weakref.ref(graph)
@@ -385,6 +388,8 @@ class _MHD_PipelineModel(nn.Module):
         self.pipeline_group = pipeline_group
         self.last_stage_rank = last_stage_rank
         self.device = device
+        self.loss_function = loss_function
+        self.microbatches = microbatches
 
     def forward(self, *args, target=None, losses=None, **kwargs):
         graph = self._graph_ref()
@@ -397,6 +402,8 @@ class _MHD_PipelineModel(nn.Module):
         result = schedule.step(*args, target=target, losses=losses, **kwargs)
         if hasattr(stage, "finish_execution"):
             stage.finish_execution()
+        if isinstance(result, torch.Tensor) and result.ndim == 0:
+            result = result / self.microbatches
         return result
 
     def synchronize_last_stage_scalar(self, value: Optional[torch.Tensor] = None) -> torch.Tensor:
@@ -414,6 +421,16 @@ def _embedded_pipeline_loss(output: Any, _target: Any) -> torch.Tensor:
     if not isinstance(value, torch.Tensor):
         raise TypeError("Pipeline 最终 stage 必须输出 Tensor 或以 Tensor 为首项的序列")
     return value.mean()
+
+
+class _MHD_PipelineLoss:
+    """Schedule callback whose scale is set once per complete schedule."""
+    def __init__(self, function):
+        self.function = function
+        self.scale = 1.0
+
+    def __call__(self, output, target):
+        return self.function(output, target) * self.scale
 
 
 class _MHD_AutoPipelineStage(nn.Module):
@@ -435,8 +452,9 @@ class _MHD_AutoPipelineStage(nn.Module):
         self.nodes_by_id = tuple(graph._nodes_in_id_order)
         self.node_ids_by_name = {node.name: node.id for node in self.nodes_by_id}
         self.selected_node_ids = set(selected_node_ids)
-        self._gradient_captures: Dict[int, List[torch.Tensor]] = defaultdict(list)
-        self._boundary_captures: Dict[int, List[torch.Tensor]] = defaultdict(list)
+        self._gradient_captures: Dict[int, List[Tuple[int, torch.Tensor]]] = defaultdict(list)
+        self._boundary_captures: Dict[int, List[Tuple[int, torch.Tensor]]] = defaultdict(list)
+        self._microbatch_index = 0
         relevant_modules: Dict[str, nn.Module] = {}
         seen: Set[int] = set()
         for step in self.steps:
@@ -456,12 +474,15 @@ class _MHD_AutoPipelineStage(nn.Module):
     def begin_execution(self) -> None:
         self._gradient_captures.clear()
         self._boundary_captures.clear()
+        self._microbatch_index = 0
         for node_id in self.selected_node_ids:
             self.nodes_by_id[node_id].gradient_message.reset()
 
     @staticmethod
-    def _combine_gradients(values: Sequence[torch.Tensor]) -> torch.Tensor:
-        detached = [value.detach() for value in values]
+    def _combine_gradients(values: Sequence[Tuple[int, torch.Tensor]]) -> torch.Tensor:
+        # GPipe backward visits microbatches in reverse order. Messages retain
+        # the caller's batch order independently of the backward schedule.
+        detached = [value.detach() for _, value in sorted(values, key=lambda item: item[0])]
         if len(detached) == 1:
             return detached[0].clone()
         if all(
@@ -486,6 +507,8 @@ class _MHD_AutoPipelineStage(nn.Module):
                 parameter.grad = None
 
     def forward(self, *inputs: torch.Tensor):
+        microbatch_index = self._microbatch_index
+        self._microbatch_index += 1
         if len(inputs) != len(self.input_names):
             raise ValueError(
                 f"Pipeline stage 需要 {len(self.input_names)} 个输入，实际 {len(inputs)}"
@@ -516,15 +539,15 @@ class _MHD_AutoPipelineStage(nn.Module):
             head_tensors = [value(node_id) for node_id in step.head_ids]
             outputs = step.edge.execute_edge_operations(head_tensors)
             outputs = [
-                output.view_as(output) if output.requires_grad else output
+                torch.ops.aten.alias.default(output) if output.requires_grad else output
                 for output in outputs
             ]
             if len(outputs) != len(step.tail_ids):
                 raise ValueError(f"Pipeline 边 '{step.edge.name}' 输出数量不匹配")
             for node_id, output in zip(step.tail_ids, outputs):
                 if output.requires_grad and not selected:
-                    def block(gradient, target=node_id):
-                        self._boundary_captures[target].append(gradient.detach())
+                    def block(gradient, target=node_id, batch=microbatch_index):
+                        self._boundary_captures[target].append((batch, gradient.detach()))
                         return torch.zeros_like(gradient)
                     output.register_hook(block)
                 pending[node_id].append(output)
@@ -535,9 +558,9 @@ class _MHD_AutoPipelineStage(nn.Module):
             if tensor is not None and tensor.requires_grad:
                 tensor.retain_grad()
                 tensor.register_hook(
-                    lambda gradient, target=node_id: self._gradient_captures[
+                    lambda gradient, target=node_id, batch=microbatch_index: self._gradient_captures[
                         target
-                    ].append(gradient.detach())
+                    ].append((batch, gradient.detach()))
                 )
         outputs = tuple(value(self.node_ids_by_name[name]) for name in self.output_names)
         return outputs[0] if len(outputs) == 1 else outputs
@@ -613,6 +636,18 @@ def _build_auto_pipeline_stages(
     stage_sequence = [stage_map[step.edge.name] for step in flattened_steps]
     if stage_sequence != sorted(stage_sequence):
         raise ValueError("pipeline_stages 必须与拓扑执行顺序单调一致")
+    # Native PipelineStage does not synchronize tied parameters across stages.
+    # Keep all occurrences of a shared parameter on one stage, otherwise its
+    # separate optimizers would silently apply different partial gradients.
+    parameter_stages = {}
+    for step in flattened_steps:
+        stage = stage_map[step.edge.name]
+        for operation in step.edge.edge_operations:
+            if isinstance(operation.function, nn.Module):
+                for parameter in operation.function.parameters():
+                    previous = parameter_stages.setdefault(id(parameter), stage)
+                    if previous != stage:
+                        raise ValueError("Pipeline 共享参数必须位于同一 stage")
     steps_by_stage = [
         [
             (step, position in selected_position_set)
@@ -660,6 +695,48 @@ def _build_auto_pipeline_stages(
     ]
 
 
+@contextmanager
+def _pipeline_metadata_context(modules, device):
+    """Shape inference must not train BatchNorm or consume the training RNG."""
+    buffers = {id(value): (value, value.detach().clone())
+               for module in modules for value in module.buffers()}
+    python_rng, numpy_rng = random.getstate(), np.random.get_state()
+    devices = [device.index if device.index is not None else torch.cuda.current_device()] if device.type == "cuda" else []
+    try:
+        with torch.random.fork_rng(devices=devices):
+            yield
+    finally:
+        with torch.no_grad():
+            for value, saved in buffers.values():
+                value.copy_(saved)
+        random.setstate(python_rng)
+        np.random.set_state(numpy_rng)
+
+
+def _pipeline_examples(stage_modules, inputs, microbatches, device, precision):
+    """Infer every communication boundary on the actual microbatch/AMP path."""
+    sizes = {value.shape[0] for value in inputs.values() if value.ndim > 0}
+    if len(sizes) > 1 or any(size == 0 or size % microbatches for size in sizes):
+        raise ValueError("Pipeline 样例输入 batch 必须一致、非空且能被 pipeline_microbatches 整除")
+    values = {name: value.chunk(microbatches, dim=0)[0] if value.ndim else value
+              for name, value in inputs.items()}
+    modules = [module.to(device) for module in stage_modules]
+    dtype = _precision_dtype(precision, device)
+    examples = []
+    with _pipeline_metadata_context(modules, device), torch.enable_grad():
+        with torch.autocast(device.type, dtype=dtype) if dtype is not None else nullcontext():
+            for module in modules:
+                args = tuple(values[name].detach().requires_grad_(
+                    values[name].is_floating_point() or values[name].is_complex())
+                    for name in module.input_names)
+                output = module(*args)
+                outputs = output if isinstance(output, tuple) else (output,)
+                detached = tuple(value.detach().requires_grad_(value.requires_grad) for value in outputs)
+                examples.append((args, detached if isinstance(output, tuple) else detached[0]))
+                values = dict(zip(module.output_names, detached))
+    return examples
+
+
 def _prepare_mhd_pipeline(
     adapter: nn.Module,
     graph: MHD_Graph,
@@ -691,14 +768,9 @@ def _prepare_mhd_pipeline(
         ).to(context.device)
         for name in input_nodes
     }
-    stage_example_args: List[Tuple[torch.Tensor, ...]] = []
-    with torch.no_grad():
-        for module in stage_modules:
-            args = tuple(stage_values[name] for name in module.input_names)
-            stage_example_args.append(args)
-            output = module.to(context.device)(*args)
-            values = output if isinstance(output, tuple) else (output,)
-            stage_values = dict(zip(module.output_names, values))
+    stage_examples = _pipeline_examples(
+        stage_modules, stage_values, config.pipeline_microbatches, context.device, precision,
+    )
     coordinate = mesh.get_coordinate()
     if coordinate is None:
         raise RuntimeError("当前 rank 不属于 MHD DeviceMesh")
@@ -709,31 +781,7 @@ def _prepare_mhd_pipeline(
         if config.compile_backend is not None:
             compile_kwargs["backend"] = config.compile_backend
         stage_module = torch.compile(stage_module, **compile_kwargs)
-    full_example_args = stage_example_args[stage_index]
-    for tensor in full_example_args:
-        if tensor.ndim > 0 and tensor.shape[0] % config.pipeline_microbatches != 0:
-            raise ValueError("Pipeline 样例 batch 必须能被 pipeline_microbatches 整除")
-    example_args = tuple(
-        tensor.chunk(config.pipeline_microbatches, dim=0)[0]
-        if tensor.ndim > 0 and config.pipeline_microbatches > 1
-        else tensor
-        for tensor in full_example_args
-    )
-    # PipelineStage 需要用样例张量建立前向与反向通信元数据。流水线中间
-    # 激活在运行时是可微的，即便用户给出的纯形状样例默认不带梯度；因此这里
-    # 只为元数据推导创建可微副本，既不改变调用方张量，也不保留初始化图。
-    metadata_example_args = tuple(
-        tensor.detach().requires_grad_(tensor.is_floating_point() or tensor.is_complex())
-        for tensor in example_args
-    )
-    precision_dtype = _precision_dtype(precision, context.device)
-    metadata_autocast = (
-        torch.autocast(context.device.type, dtype=precision_dtype)
-        if precision_dtype is not None
-        else nullcontext()
-    )
-    with metadata_autocast:
-        example_output = stage_module(*metadata_example_args)
+    metadata_example_args, example_output = stage_examples[stage_index]
     from torch.distributed.pipelining import PipelineStage, Schedule1F1B, ScheduleGPipe
     from torch.distributed.pipelining.microbatch import sum_reducer
 
@@ -756,11 +804,16 @@ def _prepare_mhd_pipeline(
         if isinstance(example_output, torch.Tensor) and example_output.ndim == 0
         else None
     )
+    loss_function = _MHD_PipelineLoss(config.pipeline_loss_fn or _embedded_pipeline_loss)
     train_schedule = schedule_type(
         build_stage(),
         config.pipeline_microbatches,
-        loss_fn=config.pipeline_loss_fn or _embedded_pipeline_loss,
+        loss_fn=loss_function,
         output_merge_spec=merge_spec,
+        # Normalize the loss itself so parameter AND input/message gradients
+        # represent the same global-batch mean. Native scale_grads only touches
+        # parameters and would leave boundary cotangents microbatches too large.
+        scale_grads=False,
     )
     inference_schedule = ScheduleGPipe(
         build_stage(),
@@ -779,6 +832,8 @@ def _prepare_mhd_pipeline(
         context.device,
         graph,
         output_nodes,
+        loss_function,
+        config.pipeline_microbatches,
     )
 
 
@@ -1403,8 +1458,8 @@ def _infer_scalar_terminal_name(graph: MHD_Graph, levels: Sequence[int], *, reve
 class MHD_Trainer:
     """Unified trainer for ordinary and optionally parallel MHD graphs.
 
-    Existing V3 arguments retain their meaning. Every V4 execution choice is an
-    optional keyword and defaults to the ordinary eager, single-device behavior.
+    Execution choices are optional keywords and default to ordinary eager,
+    single-device behavior. Message state remains a Tensor.
     """
 
     def __init__(
@@ -1489,6 +1544,9 @@ class MHD_Trainer:
         self.last_monitor_metrics: Dict[str, float] = {}
         self._micro_step = 0
         self._accumulation_step = 0
+        self._accumulation_divisor = None
+        self._checkpoint_boundary = True
+        self.data_cursor = None
         self._optimizer_steps = 0
         self._accumulation_paths: Optional[Tuple[Tuple[int, ...], Tuple[int, ...]]] = None
         self.last_eval_tensors: Dict[str, torch.Tensor] = {}
@@ -1556,10 +1614,12 @@ class MHD_Trainer:
             raise TypeError("optimizer 必须是 Optimizer 或接收 parameters 的 factory")
 
         scaler_enabled = self.precision in {"fp16", "float16"} and self.device.type == "cuda"
-        try:
+        if isinstance(self.model, _MHD_PipelineModel) and scaler_enabled:
+            # Every stage must skip the same update if any stage overflows.
+            from torch.distributed.fsdp.sharded_grad_scaler import ShardedGradScaler
+            self.grad_scaler = ShardedGradScaler(process_group=self.model.pipeline_group)
+        else:
             self.grad_scaler = torch.amp.GradScaler("cuda", enabled=scaler_enabled)
-        except TypeError:
-            self.grad_scaler = torch.cuda.amp.GradScaler(enabled=scaler_enabled)
         _precision_dtype(self.precision, self.device)
 
         if self.context.is_main:
@@ -1580,7 +1640,7 @@ class MHD_Trainer:
 
         if self.context.is_main:
             self.logger.info("=" * 80)
-            self.logger.info("🚀 MHD V4 Trainer 初始化完成")
+            self.logger.info("🚀 MHD V5 Trainer 初始化完成")
             self.logger.info(f"设备={self.device} precision={self.precision} accum={self.grad_accum_steps}")
             self.logger.info(
                 f"Forward levels={list(self.forward_levels)} "
@@ -1777,6 +1837,25 @@ class MHD_Trainer:
         backward_levels: Optional[Sequence[int]] = None,
         _force_step: bool = False,
         _loss_divisor: Optional[int] = None,
+    ) -> Dict[str, float]:
+        if not self._checkpoint_boundary:
+            raise RuntimeError("上一个 train_step 未成功完成；请从完整检查点恢复")
+        self._checkpoint_boundary = False
+        result = self._train_step_impl(
+            input_dict, forward_levels=forward_levels, backward_levels=backward_levels,
+            _force_step=_force_step, _loss_divisor=_loss_divisor,
+        )
+        self._checkpoint_boundary = True
+        return result
+
+    def _train_step_impl(
+        self,
+        input_dict: dict,
+        *,
+        forward_levels: Optional[Sequence[int]] = None,
+        backward_levels: Optional[Sequence[int]] = None,
+        _force_step: bool = False,
+        _loss_divisor: Optional[int] = None,
     ) -> dict:
         active_forward = tuple(
             self.mhd_graph._validate_levels(
@@ -1805,8 +1884,11 @@ class MHD_Trainer:
         if self._accumulation_step == 0:
             self.optimizer.zero_grad(set_to_none=True)
             self._accumulation_paths = (active_forward, active_backward)
+            self._accumulation_divisor = _loss_divisor or self.grad_accum_steps
         elif self._accumulation_paths != (active_forward, active_backward):
             raise ValueError("同一梯度累积窗口内 Forward/Backward 路径必须一致")
+        elif _loss_divisor is not None and _loss_divisor != self._accumulation_divisor:
+            raise ValueError("同一梯度累积窗口内 loss divisor 必须一致")
         should_step = (self._accumulation_step + 1 == self.grad_accum_steps) or _force_step
         sync_context = (
             self.model.no_sync()
@@ -1829,9 +1911,7 @@ class MHD_Trainer:
                 if self.grad_scaler.is_enabled()
                 else 1.0
             )
-            loss_scale = scale / float(
-                _loss_divisor or self.grad_accum_steps
-            )
+            loss_scale = scale / float(self._accumulation_divisor)
             self.mhd_graph._backward(
                 levels=list(active_backward),
                 loss_scale=loss_scale,
@@ -1867,6 +1947,7 @@ class MHD_Trainer:
                 self._optimizer_steps += 1
             self._accumulation_paths = None
             self._accumulation_step = 0
+            self._accumulation_divisor = None
         else:
             self._accumulation_step += 1
         self._micro_step += 1
@@ -1880,6 +1961,13 @@ class MHD_Trainer:
         batch_size = self._pipeline_batch_size(input_dict)
         moved = {name: tensor.to(self.device, non_blocking=True) for name, tensor in input_dict.items()}
         losses: List[torch.Tensor] = []
+        scale = float(self.grad_scaler.get_scale())
+        loss_scale = scale / self.parallel.pipeline_microbatches
+        self.model.loss_function.scale = loss_scale
+        if self.grad_scaler.is_enabled():
+            # Nonterminal stages never evaluate the loss callback, but still
+            # need the scaler's public per-device state before unscale/step.
+            self.grad_scaler.scale(torch.zeros((), device=self.device))
         with self._autocast_context():
             if self.model.stage_index == 0:
                 args = tuple(moved[name] for name in self.input_nodes)
@@ -1889,11 +1977,18 @@ class MHD_Trainer:
                 self.model(target=dummy_target, losses=losses)
             else:
                 self.model()
+        self.grad_scaler.unscale_(self.optimizer)
+        if scale != 1.0:
+            for node in self.mhd_graph.nodes:
+                node.gradient_message.current_state = node.gradient_message.current_state / scale
         if self.grad_clip_norm and self.grad_clip_norm > 0:
             torch.nn.utils.clip_grad_norm_(self.model.parameters(), self.grad_clip_norm)
-        self.optimizer.step()
+        self.grad_scaler.step(self.optimizer)
+        self.grad_scaler.update()
+        if not self.grad_scaler.is_enabled() or float(self.grad_scaler.get_scale()) >= scale:
+            self._optimizer_steps += 1
         self._micro_step += 1
-        local_loss = torch.stack([value.detach().float() for value in losses]).mean() if losses else None
+        local_loss = torch.stack([value.detach().float() for value in losses]).mean() / loss_scale if losses else None
         loss = self.model.synchronize_last_stage_scalar(local_loss)
         return {self.loss_node_name: float(loss.item())}
 
@@ -2023,18 +2118,199 @@ class MHD_Trainer:
         self.logger.info(f"📊 验证轮次 {epoch+1} 指标: {avg_metrics}")
         return avg_metrics
 
+    def _checkpoint_contract(self):
+        return {
+            "optimizer": type(self.optimizer).__module__ + "." + type(self.optimizer).__qualname__,
+            "scheduler": None if self.lr_scheduler is None else type(self.lr_scheduler).__module__ + "." + type(self.lr_scheduler).__qualname__,
+            "criteria_name": self.criteria_name,
+            "criteria_mode": self.criteria_mode,
+            "world_size": self.context.world_size,
+            "precision": self.precision,
+            "grad_accum_steps": self.grad_accum_steps,
+            "data_parallel": self.parallel.data_parallel,
+            "tensor_parallel_size": self.parallel.tensor_parallel_size,
+            "pipeline_size": self.parallel.pipeline_size,
+            "pipeline_microbatches": self.parallel.pipeline_microbatches,
+            "pipeline_schedule": self.parallel.pipeline_schedule,
+        }
+
+    def _canonical_checkpoint_model(self, model_state):
+        """One graph weight namespace independent of its execution wrapper."""
+        canonical = {}
+        self._checkpoint_model_names = {}
+        graph_keys = set(self.mhd_graph.state_dict())
+        for name, value in model_state.items():
+            if isinstance(self.model, _MHD_PipelineModel):
+                prefix = "stage_module.edge_modules."
+                if not name.startswith(prefix):
+                    raise ValueError("未知 PP 模型状态字段: " + name)
+                key = "edge_module_map." + name[len(prefix):]
+            else:
+                key = name.removeprefix("graph.")
+            if key not in graph_keys or key in canonical:
+                raise ValueError("模型状态无法映射至唯一 Graph 字段: " + name)
+            canonical[key] = value
+            self._checkpoint_model_names[key] = name
+        return canonical
+
+    def _checkpoint_runtime(self, data_cursor):
+        """Rank-local state is never deduplicated across DDP/TP/PP ranks."""
+        from torch.distributed.tensor import DTensor
+        parameters = dict(self.model.named_parameters())
+        gradients = {}
+        for name, parameter in parameters.items():
+            grad = parameter.grad
+            gradients[name] = None if grad is None else (
+                grad.to_local() if isinstance(grad, DTensor) else grad
+            ).detach().cpu().clone()
+        state = {
+            "contract": self._checkpoint_contract(),
+            "rank": self.context.rank,
+            "parameters": {name: (tuple(p.shape), str(p.dtype),
+                tuple(map(str, p.placements)) if isinstance(p, DTensor) else ())
+                for name, p in parameters.items()},
+            "gradients": gradients,
+            "micro_step": self._micro_step,
+            "optimizer_steps": self._optimizer_steps,
+            "accumulation_step": self._accumulation_step,
+            "accumulation_paths": self._accumulation_paths,
+            "accumulation_divisor": self._accumulation_divisor,
+            "data_cursor": data_cursor,
+            "rng": {"python": random.getstate(), "numpy": np.random.get_state(),
+                    "torch": torch.get_rng_state(),
+                    "cuda": torch.cuda.get_rng_state(self.device) if self.device.type == "cuda" else None},
+            "nodes": {node.name: {
+                "id": node.id,
+                "feature_initial": node.feature_message.initial_state.detach().cpu(),
+                "feature_current": node.feature_message.current_state.detach().cpu(),
+                "gradient_initial": node.gradient_message.initial_state.detach().cpu(),
+                "gradient_current": node.gradient_message.current_state.detach().cpu(),
+                "gradient_explicit": not node._gradient_initial_is_implicit(),
+            } for node in self.mhd_graph.nodes},
+        }
+        stream = io.BytesIO()
+        torch.save(state, stream)
+        return stream.getvalue()
+
+    def _restore_checkpoint_runtime(self, payload, *, validate_only=False):
+        from torch.distributed.tensor import DTensor
+        # Trainer checkpoints are trusted local execution artifacts, like DCP's
+        # own pickled metadata; this is not a reader for untrusted model uploads.
+        state = torch.load(io.BytesIO(payload), map_location="cpu", weights_only=False)
+        if state["contract"] != self._checkpoint_contract() or state["rank"] != self.context.rank:
+            raise ValueError("Trainer checkpoint 的并行布局、精度或累积配置不匹配")
+        parameters = dict(self.model.named_parameters())
+        layout = {name: (tuple(p.shape), str(p.dtype),
+            tuple(map(str, p.placements)) if isinstance(p, DTensor) else ())
+            for name, p in parameters.items()}
+        if layout != state["parameters"] or set(parameters) != set(state["gradients"]):
+            raise ValueError("Trainer checkpoint 参数或梯度布局不匹配")
+        position = state["accumulation_step"]
+        if not 0 <= position < self.grad_accum_steps:
+            raise ValueError("Trainer checkpoint 累积窗口位置非法")
+        if bool(position) != (state["accumulation_paths"] is not None):
+            raise ValueError("Trainer checkpoint 累积窗口状态不完整")
+        divisor = state["accumulation_divisor"]
+        if (position and (not isinstance(divisor, int) or divisor < 1)) or (not position and divisor is not None):
+            raise ValueError("Trainer checkpoint 累积窗口除数非法")
+        if self.device.type == "cuda" and state["rng"]["cuda"] is None:
+            raise ValueError("CUDA 续训缺少原设备随机状态")
+        if {node.name: node.id for node in self.mhd_graph.nodes} != {
+            name: record["id"] for name, record in state["nodes"].items()
+        }:
+            raise ValueError("Trainer checkpoint 节点身份不匹配")
+        restored_gradients = {}
+        for name, p in parameters.items():
+            saved = state["gradients"][name]
+            if saved is None:
+                restored_gradients[name] = None
+                continue
+            local = p.to_local() if isinstance(p, DTensor) else p
+            if saved.shape != local.shape or saved.dtype != p.dtype:
+                raise ValueError("Trainer checkpoint 梯度 shape/dtype 不匹配: " + name)
+            if validate_only:
+                continue
+            if isinstance(p, DTensor):
+                grad = torch.empty_like(p)
+                grad.to_local().copy_(saved.to(local.device))
+            else:
+                grad = saved.to(p.device).clone()
+            restored_gradients[name] = grad
+        if validate_only:
+            return
+        for name, p in parameters.items():
+            p.grad = restored_gradients[name]
+        for node in self.mhd_graph.nodes:
+            record = state["nodes"][node.name]
+            node.feature_message = MHD_Node.Message._from_state_snapshot(
+                record["feature_initial"].to(self.device), record["feature_current"].to(self.device))
+            node.gradient_message = MHD_Node.Message._from_state_snapshot(
+                record["gradient_initial"].to(self.device), record["gradient_current"].to(self.device))
+            _restore_gradient_input_metadata(node, record["gradient_explicit"])
+        self._micro_step = state["micro_step"]
+        self._optimizer_steps = state["optimizer_steps"]
+        self._accumulation_step = position
+        self._accumulation_paths = state["accumulation_paths"]
+        self._accumulation_divisor = state["accumulation_divisor"]
+        self.data_cursor = state["data_cursor"]
+        random.setstate(state["rng"]["python"])
+        np.random.set_state(state["rng"]["numpy"])
+        torch.set_rng_state(state["rng"]["torch"])
+        if self.device.type == "cuda":
+            if state["rng"]["cuda"] is None:
+                raise ValueError("CUDA 续训缺少原设备随机状态")
+            torch.cuda.set_rng_state(state["rng"]["cuda"], self.device)
+        self._checkpoint_boundary = True
+
     def _checkpoint_state(
         self,
         epoch: int,
         *,
-        legacy_node_format: bool = False,
+        data_cursor=None,
+        _for_load: bool = False,
     ) -> Dict[str, Any]:
         from torch.distributed.checkpoint.state_dict import get_state_dict
 
-        model_state, optimizer_state = get_state_dict(self.model, self.optimizer)
+        runtime = b"" if _for_load else self._checkpoint_runtime(data_cursor)
+        # PyTorch 2.8 initializes an empty optimizer by taking a zero-LR step
+        # when no gradients exist. Saving must not advance Adam's step counter.
+        sentinel = None
+        saved_optimizer_state = None
+        saved_gradients = None
+        if _for_load:
+            # Construct a complete DCP template even when loading into a used
+            # optimizer whose current state covers only a subset of parameters.
+            # Template preparation must not erase the caller's pending window.
+            saved_optimizer_state = self.optimizer.state.copy()
+            saved_gradients = {p: p.grad for group in self.optimizer.param_groups for p in group["params"]}
+            self.optimizer.state.clear()
+            for p in saved_gradients:
+                p.grad = None
+        if not _for_load and not self.optimizer.state:
+            parameters = [p for group in self.optimizer.param_groups for p in group["params"]]
+            if not any(p.grad is not None for p in parameters):
+                sentinel = next((p for p in parameters if p.requires_grad), None)
+                if sentinel is not None:
+                    sentinel.grad = torch.zeros_like(sentinel)
+        try:
+            model_state, optimizer_state = get_state_dict(self.model, self.optimizer)
+        finally:
+            if sentinel is not None:
+                sentinel.grad = None
+            if _for_load:
+                self.optimizer.state.clear()
+                self.optimizer.state.update(saved_optimizer_state)
+                for p, grad in saved_gradients.items():
+                    p.grad = grad
         state = {
-            "model": model_state,
-            "optimizer": optimizer_state,
+            "format": "mhd_trainer_v5_step_1",
+            "runtime": {str(self.context.rank): runtime},
+            "model": self._canonical_checkpoint_model(model_state),
+            # Optimizer Tensor shards share their global FQN so DCP can assemble
+            # complete tensors. PP parameter-group membership is rank-local and
+            # must not be deduplicated into another stage's group list.
+            "optimizer": {"state": optimizer_state["state"]},
+            "optimizer_groups": {str(self.context.rank): optimizer_state["param_groups"]},
             "trainer": {
                 "history": self.history,
                 "epoch": epoch,
@@ -2047,61 +2323,26 @@ class MHD_Trainer:
             "scheduler": self.lr_scheduler.state_dict() if self.lr_scheduler else {},
             "scaler": self.grad_scaler.state_dict(),
         }
-        ordered_nodes = sorted(self.mhd_graph.nodes, key=lambda item: item.id)
-        if legacy_node_format:
-            state.update(
-                {
-                    "nodes": {
-                        node.name: node.feature_message.initial_state.detach()
-                        for node in ordered_nodes
-                    },
-                    "feature_message_current": {
-                        node.name: node.feature_message.current_state.detach()
-                        for node in ordered_nodes
-                    },
-                    "gradient_message_initial": {
-                        node.name: node.gradient_message.initial_state.detach()
-                        for node in ordered_nodes
-                    },
-                    "gradient_message_current": {
-                        node.name: node.gradient_message.current_state.detach()
-                        for node in ordered_nodes
-                    },
-                }
-            )
-        else:
-            state["node_messages"] = {
-                node.name: {
-                    "feature_message": {
-                        "initial_state": node.feature_message.initial_state.detach(),
-                        "current_state": node.feature_message.current_state.detach(),
-                    },
-                    "gradient_message": {
-                        "initial_state": node.gradient_message.initial_state.detach(),
-                        "initial_state_explicit": not node._gradient_initial_is_implicit(),
-                        "current_state": node.gradient_message.current_state.detach(),
-                    },
-                }
-                for node in ordered_nodes
-            }
         return state
 
     def _save_best_checkpoint(self):
         self._save_distributed_checkpoint("best", self.history["best_epoch"])
 
-    def save_checkpoint(self, epoch: int):
-        self._save_distributed_checkpoint(f"epoch_{epoch}", epoch)
+    def save_checkpoint(self, epoch: int, *, data_cursor=None):
+        self._save_distributed_checkpoint(f"epoch_{epoch}", epoch, data_cursor=data_cursor)
 
-    def save_last_checkpoint(self, epoch: int):
-        self._save_distributed_checkpoint("last", epoch)
+    def save_last_checkpoint(self, epoch: int, *, data_cursor=None):
+        self._save_distributed_checkpoint("last", epoch, data_cursor=data_cursor)
 
-    def _save_distributed_checkpoint(self, name: str, epoch: int) -> None:
+    def _save_distributed_checkpoint(self, name: str, epoch: int, *, data_cursor=None) -> None:
+        if not self._checkpoint_boundary:
+            raise RuntimeError("检查点只能保存于成功完成的 train_step / PP schedule 边界")
         try:
             from torch.distributed import checkpoint as dcp
 
             checkpoint_path = os.path.join(self.save_dir, name)
             dcp.save(
-                self._checkpoint_state(epoch),
+                self._checkpoint_state(epoch, data_cursor=data_cursor),
                 checkpoint_id=checkpoint_path,
                 no_dist=not self.context.distributed,
             )
@@ -2136,9 +2377,13 @@ class MHD_Trainer:
 
             metadata = dcp.FileSystemReader(checkpoint_path).read_metadata()
             checkpoint_keys = tuple(str(key) for key in metadata.state_dict_metadata)
-            canonical_messages = any(
-                key.startswith("node_messages.") for key in checkpoint_keys
-            )
+            if "format" not in checkpoint_keys or f"runtime.{self.context.rank}" not in checkpoint_keys:
+                raise ValueError("不是当前 V5 完整续训检查点；请使用独立迁移工具")
+            header = {"format": "", "runtime": {str(self.context.rank): b""}}
+            dcp.load(header, checkpoint_id=checkpoint_path, no_dist=not self.context.distributed)
+            if header["format"] != "mhd_trainer_v5_step_1":
+                raise ValueError("未知 Trainer checkpoint 格式")
+            self._restore_checkpoint_runtime(header["runtime"][str(self.context.rank)], validate_only=True)
             for split in ("train", "eval"):
                 prefix = f"trainer.history.{split}.metrics."
                 records: Dict[int, Dict[str, float]] = {}
@@ -2160,71 +2405,42 @@ class MHD_Trainer:
                     ]
             state = self._checkpoint_state(
                 epoch or 0,
-                legacy_node_format=not canonical_messages,
+                _for_load=True,
             )
-            if canonical_messages:
-                # DCP requires the requested keys to exist even for plain bools.
-                for node_name, saved in state["node_messages"].items():
-                    key = f"node_messages.{node_name}.gradient_message.initial_state_explicit"
-                    if key not in checkpoint_keys:
-                        saved["gradient_message"].pop("initial_state_explicit", None)
-            # Allocate node snapshots from checkpoint metadata, not the fresh
-            # graph's placeholder dtype/shape (DCP otherwise casts/truncates).
-            for node in self.mhd_graph.nodes:
-                for kind in ("feature", "gradient"):
-                    for version in ("initial", "current"):
-                        if canonical_messages:
-                            container = state["node_messages"][node.name][f"{kind}_message"]
-                            field = f"{version}_state"
-                            key = f"node_messages.{node.name}.{kind}_message.{field}"
-                        else:
-                            group = "nodes" if kind == "feature" and version == "initial" else f"{kind}_message_{version}"
-                            container = state[group]
-                            field = node.name
-                            key = f"{group}.{node.name}"
-                        tensor_metadata = metadata.state_dict_metadata.get(key)
-                        if tensor_metadata is not None:
-                            container[field] = torch.empty(
-                                tensor_metadata.size,
-                                dtype=tensor_metadata.properties.dtype,
-                                device=self.device,
-                            )
+            # A fresh Adam/SGD placeholder includes parameters that never received
+            # a gradient in the saved execution. Keep their optimizer state absent.
+            optimizer_state = state["optimizer"]
+            optimizer_states = optimizer_state.get("state", {})
+            absent_optimizer_states = []
+            for name in list(optimizer_states):
+                prefix = f"optimizer.state.{name}."
+                if not any(key.startswith(prefix) for key in checkpoint_keys):
+                    absent_optimizer_states.append(name)
+                    del optimizer_states[name]
             dcp.load(state, checkpoint_id=checkpoint_path, no_dist=not self.context.distributed)
+            optimizer_state["param_groups"] = state["optimizer_groups"][str(self.context.rank)]
+            if state["format"] != "mhd_trainer_v5_step_1":
+                raise ValueError("未知 Trainer checkpoint 格式")
+            # PyTorch 2.8's named optimizer splitter indexes every parameter once
+            # any state exists. Empty placeholders satisfy that mapping only;
+            # remove them from the optimizer immediately after restoration.
+            if optimizer_states:
+                for name in absent_optimizer_states:
+                    optimizer_states[name] = {}
+            absent_parameters = [
+                parameter
+                for saved_group, current_group in zip(optimizer_state["param_groups"], self.optimizer.param_groups)
+                for name, parameter in zip(saved_group["params"], current_group["params"])
+                if name in absent_optimizer_states
+            ]
             set_state_dict(
                 self.model,
                 self.optimizer,
-                model_state_dict=state["model"],
-                optim_state_dict=state["optimizer"],
+                model_state_dict={self._checkpoint_model_names[name]: value for name, value in state["model"].items()},
+                optim_state_dict=optimizer_state,
             )
-            for node in self.mhd_graph.nodes:
-                if canonical_messages:
-                    message_state = state["node_messages"].get(node.name)
-                    if message_state is None:
-                        continue
-                    feature_initial = message_state["feature_message"]["initial_state"].to(self.device)
-                    feature_current = message_state["feature_message"]["current_state"].to(self.device)
-                    gradient_initial = message_state["gradient_message"]["initial_state"].to(self.device)
-                    gradient_current = message_state["gradient_message"]["current_state"].to(self.device)
-                else:
-                    if node.name not in state["nodes"]:
-                        continue
-                    feature_initial = state["nodes"][node.name].to(self.device)
-                    feature_current = state.get("feature_message_current", {}).get(
-                        node.name, feature_initial
-                    ).to(self.device)
-                    gradient_initial = state.get("gradient_message_initial", {}).get(
-                        node.name, node.gradient_message.initial_state
-                    ).to(self.device)
-                    gradient_current = state.get("gradient_message_current", {}).get(
-                        node.name, gradient_initial
-                    ).to(self.device)
-                node.feature_message = MHD_Node.Message._from_state_snapshot(feature_initial, feature_current)
-                node.gradient_message = MHD_Node.Message._from_state_snapshot(gradient_initial, gradient_current)
-                explicit = (
-                    message_state["gradient_message"].get("initial_state_explicit")
-                    if canonical_messages else None
-                )
-                _restore_gradient_input_metadata(node, explicit)
+            for parameter in absent_parameters:
+                self.optimizer.state.pop(parameter, None)
             self.mhd_graph._forward_trace = []
             self.mhd_graph._last_forward_levels = tuple()
             self.history = state["trainer"]["history"]
@@ -2259,6 +2475,7 @@ class MHD_Trainer:
                 self.lr_scheduler.load_state_dict(state["scheduler"])
             if state["scaler"]:
                 self.grad_scaler.load_state_dict(state["scaler"])
+            self._restore_checkpoint_runtime(state["runtime"][str(self.context.rank)])
             self.logger.info("✅ 权重加载完成")
             return int(state["trainer"].get("epoch", epoch or 0))
         except Exception as e:
@@ -2409,7 +2626,7 @@ class MHD_Inferencer:
         """
         Args:
             build_graph_fn: 图构建函数，签名需为 (batch_size, ...) -> MHD_Graph
-            checkpoint_dir: 保存有权重文件的目录（需包含 node_best.pth 和 edge_best.pth）
+            checkpoint_dir: 当前 V5 Trainer 检查点根目录（包含 best/）
             device: 计算设备
             build_kwargs: 传递给 build_graph_fn 的其他参数（除 batch_size 和 device 外）
         """
@@ -2421,33 +2638,30 @@ class MHD_Inferencer:
             raise ValueError("MHD_Inferencer 必须显式提供非空 levels")
 
         train_graph = build_graph_fn(batch_size=1, device=self.device, **self.build_kwargs)
-        node_path = os.path.join(checkpoint_dir, "node_best.pth")
-        edge_path = os.path.join(checkpoint_dir, "edge_best.pth")
+        from torch.distributed import checkpoint as dcp
+        from torch.distributed.checkpoint.state_dict import get_model_state_dict, set_model_state_dict
         dcp_path = os.path.join(checkpoint_dir, "best")
-        if os.path.isdir(dcp_path):
-            from torch.distributed import checkpoint as dcp
-            from torch.distributed.checkpoint.state_dict import get_model_state_dict, set_model_state_dict
-
-            state = {
-                "model": get_model_state_dict(train_graph),
-                "nodes": {node.name: node.feature_message.initial_state for node in train_graph.nodes},
-            }
-            dcp.load(state, checkpoint_id=dcp_path, no_dist=True)
-            set_model_state_dict(train_graph, state["model"])
-            for node in train_graph.nodes:
-                if node.name in state["nodes"]:
-                    node.feature_message.update_initial(
-                        state["nodes"][node.name].to(self.device),
-                        update_current=True,
-                    )
-        elif os.path.exists(node_path) and os.path.exists(edge_path):
-            updown_node(train_graph.nodes, node_path, mode="up", target_device=self.device)
-            updown_edge(train_graph.edges, edge_path, mode="up", target_device=self.device)
-        else:
-            raise FileNotFoundError(f"未找到 V4 DCP 或 V3 best 检查点: {checkpoint_dir}")
+        if not os.path.isdir(dcp_path):
+            raise FileNotFoundError(f"未找到当前 V5 best 检查点: {checkpoint_dir}；旧产物须独立迁移")
+        metadata = dcp.FileSystemReader(dcp_path).read_metadata()
+        if "format" not in metadata.state_dict_metadata or "runtime.0" not in metadata.state_dict_metadata:
+            raise ValueError("不是当前 V5 检查点；旧产物须独立迁移")
+        state = {"format": "", "runtime": {"0": b""}, "model": get_model_state_dict(train_graph)}
+        dcp.load(state, checkpoint_id=dcp_path, no_dist=True)
+        if state["format"] != "mhd_trainer_v5_step_1":
+            raise ValueError("未知 V5 checkpoint 格式")
+        runtime = torch.load(io.BytesIO(state["runtime"]["0"]), map_location="cpu", weights_only=False)
+        if {node.name: node.id for node in train_graph.nodes} != {
+            name: record["id"] for name, record in runtime["nodes"].items()
+        }:
+            raise ValueError("推理 Graph 节点身份与检查点不一致")
+        set_model_state_dict(train_graph, state["model"])
+        for node in train_graph.nodes:
+            record = runtime["nodes"][node.name]
+            node.feature_message.update_initial(record["feature_initial"].to(self.device), update_current=True)
 
         self.graph = train_graph
-        self.model = _MHD_GraphAdapter(train_graph, self.input_nodes, self.output_nodes, levels)
+        self.model = _MHD_GraphAdapter(train_graph, self.input_nodes, self.output_nodes, levels).eval()
         print("✅ MHD Inferencer 初始化完成")
 
     @torch.inference_mode()

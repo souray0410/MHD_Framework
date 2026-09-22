@@ -899,9 +899,11 @@ class MHD_Graph(nn.Module):
                 old = states[node_id]
                 value = node.aggregate_messages(old.value, [item[2] for item in incomings])
                 # Distinguish every post-aggregation state, including identity
-                # aggregations, without copying activation storage.
+                # aggregations, without copying activation storage. Alias backward
+                # preserves gradient strides; view_as can reshape a channels-last
+                # gradient and change FP32 reduction order in upstream kernels.
                 if value.requires_grad:
-                    value = value.view_as(value)
+                    value = torch.ops.aten.alias.default(value)
                 state = _MHD_StateVersion(
                     node_id, value,
                     tuple((ti, oi) for ti, oi, _ in incomings) if record_trace else (),
@@ -918,7 +920,7 @@ class MHD_Graph(nn.Module):
                 input_states = tuple(states[nid] for nid in step.head_ids)
                 head_tensors = [state.value for state in input_states]
                 outputs = step.edge.execute_edge_operations(head_tensors)
-                outputs = [output.view_as(output) if output.requires_grad else output for output in outputs]
+                outputs = [torch.ops.aten.alias.default(output) if output.requires_grad else output for output in outputs]
                 if len(outputs) != len(step.tail_ids):
                     raise ValueError(
                         f"边 '{step.edge.name}' 输出数量 ({len(outputs)}) 与尾节点数 ({len(step.tail_ids)}) 不匹配"

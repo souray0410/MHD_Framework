@@ -171,7 +171,7 @@ Framework 从 `mhd_framework.core` 导入，Utils 从 `mhd_framework.utils` 导�
 - 从早期 V5 升级：梯度初态只作为所选终点的反向输入，不再多点注入；合并不再平均；Topo 字段统一为 COO；部分反向的起点来自所选依赖而非完整 Forward。
 - 从 631895d 升级：取消张量终点限制和非零初态禁令；原 backward 的 retain_graph 关键字改为 Graph 构造参数或属性。
 - 内置聚合的广播、dtype、并列极值梯度及空 incoming 行为不变；不开启 incoming 的自动 detach。
-- updown_node 与 Trainer checkpoint 保存数值状态和 Gradient Message 的 initial_state_explicit 标记。旧文件缺少标记时，零初态按未配置读取，非零初态按显式输入读取；旧格式无法恢复显式零与隐式零的区别。四份运行状态分别恢复其 shape/dtype，支持初态占位形状与当前 batch 不同、以及 AMP 当前梯度与初态精度不同；加载时使用相同 aggregation、memory 重建目标图。不修改 V4 checkpoint 格式。
+- `updown_node` 保存节点数值和 Gradient Message 的 `initial_state_explicit` 标记。仅此节点文件读取器保留旧 Tensor 文件读取：缺少标记时，零按未配置、非零按显式输入恢复，无法推断历史显式零。Trainer 使用唯一当前完整步断点格式；旧 Trainer 文件须独立迁移。四份运行状态分别恢复 shape/dtype；重建时必须使用相同 aggregation 和 memory。详见 [V4 → V5 迁移](migration-v5.zh-CN.md)。
 - Trainer 的 `criteria` 仍由任务定义，用于验证和最佳 checkpoint 选择。Tensor 输出的均值日志只是指标，不一定等于本次 VJP 对应的目标。AMP 缩放传入梯度，梯度累积和 optimizer 保持原生管理。
 - PP 沿用原生流水线的 loss/backward 调度，本轮不扩展为可复用 VJP：retain_graph=True 或输出节点的显式 Gradient 输入会明确报错，包含准备模型后修改设置的情况。PP 继续由已有 pipeline_loss_fn 定义标量目标；Graph 的张量 VJP 适用于普通执行及共享该反向路径的并行模式。
 

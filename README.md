@@ -50,7 +50,9 @@ The example wraps a linear layer and scalar loss, executes their forward levels,
 
 ## Models
 
-[Architecture and trained-artifact registry](docs/models.md). The initial catalog is planned; accepted trained weights are listed separately from architecture implementations.
+Install the optional `models` extra for `mhd_framework.models.create_model`. ResNet, DenseNet, RETFound, ViT, Swin, ConvNeXt, EfficientNet and DINOv2 adapters expose named graph endpoints. The `models_extended` extra supplies additional encoders. See [architectures and artifact provenance](docs/models.md) and [examples/model.py](examples/model.py). Architecture availability does not certify trained weights.
+
+[V4 → V5 migration](docs/migration-v5.md) describes the interface changes and explicit artifact conversion boundary.
 
 ## Development
 

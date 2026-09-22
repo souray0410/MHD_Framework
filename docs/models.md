@@ -8,7 +8,7 @@ Identify each artifact by architecture/adapter revision, spatial dimensions, fra
 
 The initial standard ResNet family is 18/34/50/101/152. Torchvision's bottleneck implementation is the V1.5 stride-placement variant; record that reference explicitly. A volumetric inflation adaptation has its own architecture ID, depth/stride specification and channel conversion. It does not inherit certification from a 2D model. Later DenseNet, U-Net and transformer families enter through the same acceptance process.
 
-The catalog may index V4 and V5 artifacts simultaneously. This does not put multiple framework implementations into one installed package. Users install the pinned release required by an artifact. Cross-release compatibility is supported only by explicit output, gradient and checkpoint evidence; loading without an exception is insufficient. Existing V4/V5 tags remain immutable.
+The catalog may index V4 and V5 artifacts simultaneously. This does not put multiple framework implementations into one installed package. Users install the pinned release required by an artifact. Cross-release compatibility is supported only by explicit output, gradient and checkpoint evidence; loading without an exception is insufficient. V4 remains immutable. The explicitly authorized V5 preview replacement is archived and verified under the release procedure before formal publication.
 
 ## Acceptance lifecycle
 
@@ -30,7 +30,7 @@ Framework source, architecture adapter revision, data version and trained artifa
 
 ## Current state
 
-The initial [catalog](../models/catalog.json) is a design registry, not a completed model collection. Broad ResNet/3D adapters, native dataset training and a priority dispatcher still need implementation and acceptance. The framework's existing basic model and distributed tests do not constitute that full collection.
+The root [catalog](../models/catalog.json) is a design registry, not a completed trained model collection. Implemented architectures in `mhd_framework.models` are separate from dataset-specific training and production resource acceptance.
 
 Reference: [Torchvision ResNet definitions](https://docs.pytorch.org/vision/stable/models/resnet.html).
 
@@ -40,19 +40,19 @@ Callers select an `architecture_id` independently from a `weights_id`. A human-r
 
 Use semantic feature endpoints (`stem`, `stage1`... or named transformer blocks) mapped to exact original MHD Node IDs. Each endpoint declares channels, batch/eye axes, grid or token order, class-token handling, spatial stride and supported inputs. Classifier identity, prediction unit, label order and pooling also form part of the contract. Backbone-only transfer with a new head is a new initialization/transfer event, never a strict full-model reproduction. Consumers keep bridge-specific code outside the native adapter.
 
-Separate two migration operations: (1) replay/convert the same trained model under a new framework/adapter while preserving input, task and state, and (2) train/fine-tune on a new dataset or task. The first requires a key-conversion map, complete reference receipts, source and destination SHAs and numerical tolerances; the second creates a new training artifact with a parent link. A successful load alone certifies neither. A change of preprocessing or label definition may invalidate transfer-as-baseline comparability even when tensor dimensions fit. Never overwrite the parent checkpoint or move a published release tag.
+Separate two migration operations: (1) replay/convert the same trained model under a new framework/adapter while preserving input, task and state, and (2) train/fine-tune on a new dataset or task. The first requires a key-conversion map, complete reference receipts, source and destination SHAs and numerical tolerances; the second creates a new training artifact with a parent link. A successful load alone certifies neither. A change of preprocessing or label definition may invalidate transfer-as-baseline comparability even when tensor dimensions fit. Never overwrite the parent checkpoint or move an established stable release tag.
 
 Retain compact machine-readable `model_card.json`, `environment.lock.json`, `framework.lock.json`, `preprocessing.json`, `task.json`, `feature_interface.json`, `acceptance.json` and an artifact manifest with checkpoint digests alongside logs, predictions and resume files in authorized storage. Public metadata contains no participant identifiers. The same artifact resolver must work with explicit deployment roots on ws02, Ibex or another host; source code never embeds the original absolute training path.
 
 ## Unique identity and configuration
 
-`models/configs/` contains explicit initial architecture candidates; these are not implemented or trained models. Each catalog entry stores the SHA256 of canonical UTF-8 JSON (`sort_keys=True`, compact separators, `ensure_ascii=False`, finite JSON numbers only). Changing block counts, dimensions, stride policy or initialization policy changes the configuration digest. `models/validate.py` verifies these digests and rejects duplicate architecture/artifact IDs.
+`models/configs/` contains explicit architecture candidates; a catalog record alone is neither an implementation receipt nor a trained model. Each catalog entry stores the SHA256 of canonical UTF-8 JSON (`sort_keys=True`, compact separators, `ensure_ascii=False`, finite JSON numbers only). Changing block counts, dimensions, stride policy or initialization policy changes the configuration digest. `models/validate.py` verifies these digests and rejects duplicate architecture/artifact IDs.
 
 A trained record has a `training_config_id`: the canonical SHA256 of the complete architecture, framework, data, initialization and training sections. All referenced configuration files must accompany it with checked SHA256 values, including actual task/head, label order, preprocessing, optimizer/LR groups, convergence and seed. A human-readable name is an alias, never the unique key. Every independent execution gets a `run_id` UUID; resumed attempts retain that run ID and have distinct attempt IDs in the execution ledger.
 
 The immutable artifact ID is `weights_` followed by the canonical SHA256 of `{training_config_id, run_id, checkpoint_sha256}`. Different checkpoint selections or repeated independent runs therefore do not collide under a reused filename. Duplicate registration is idempotent only if all immutable provenance agrees; divergent metadata for an existing ID is rejected. Moving physical storage does not change these identities. A timestamp is useful for organizing runs but is not an artifact identifier.
 
-The future Python import namespace for model builders is `mhd_framework.models`; no placeholder builder is advertised before implementation and acceptance. The root `models/` directory currently holds the catalog, explicit configurations and provenance specification. This change does not alter installed V4 behavior or existing release tags.
+The Python import namespace for model builders is `mhd_framework.models`. The root `models/` directory currently holds the catalog, explicit configurations and provenance specification. This change does not alter installed V4 behavior or existing release tags.
 
 ## Companion training workflows
 
@@ -69,3 +69,21 @@ and checkpoint acceptance; a matching major-version label alone is insufficient.
 Existing artifacts retain their original identities and version locks. Reviewed
 public companion releases must ship the corresponding executable recipes and
 permitted artifact references using the same reproduction contract.
+
+## V5 architecture port
+
+`create_model(config, weights=..., device=...)` builds the complete task graph.
+The port source and original file digests are recorded in
+[model_port_source.json](model_port_source.json). The source version is the V4
+revision actually used by the registered consumers. Node IDs, branches, named
+feature endpoints, native parameter keys and sharing are retained. Explicit
+`sum, memory=False` replaces the removed one-producer `replace` aggregation.
+
+Architecture availability and synthetic native-reference acceptance do not
+certify every trained artifact. Current artifact requests require API V5.
+Use an independent conversion and numerical acceptance before consuming V4
+weights; retain their original training revision and source hashes.
+
+The small `models.training` and `models.recipes` helpers remain available to
+existing custom loops. Dataset manifests, task recipes, dispatch and full
+scientific run ownership belong to MHD_Models or the research application.

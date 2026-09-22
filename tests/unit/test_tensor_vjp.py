@@ -323,8 +323,7 @@ def test_device_migration_preserves_zero_input_provenance(explicit):
 
 
 @pytest.mark.parametrize("mode", ["implicit", "zero", "nonzero"])
-@pytest.mark.parametrize("format", ["new", "old_nested", "old_flat"])
-def test_trainer_checkpoint_roundtrip_preserves_backward_input(tmp_path, mode, format):
+def test_trainer_checkpoint_roundtrip_preserves_backward_input(tmp_path, mode):
     from torch.distributed import checkpoint as dcp
     graph = make([Scale(), square], CHAIN)
     root = graph.get_node_by_id(2)
@@ -336,17 +335,14 @@ def test_trainer_checkpoint_roundtrip_preserves_backward_input(tmp_path, mode, f
         save_dir=str(tmp_path), input_nodes=["n0"], output_nodes=["n2"],
         distributed_context=MHD_DistributedContext(0, 0, 1, torch.device("cpu"), "gloo"),
     )
-    state = trainer._checkpoint_state(1, legacy_node_format=format == "old_flat")
-    if format == "old_nested":
-        for saved in state["node_messages"].values():
-            saved["gradient_message"].pop("initial_state_explicit")
+    state = trainer._checkpoint_state(1)
     dcp.save(state, checkpoint_id=str(tmp_path / "epoch_1"), no_dist=True)
     root.gradient_message.update_initial(torch.tensor(99.))
     assert trainer.load_checkpoint(epoch=1) == 1
     assert not graph._forward_trace
     x = set_input(graph)
     graph.forward([0, 1]).backward([2, 3])
-    multiplier = 3. if mode == "nonzero" else 1. if mode == "implicit" or format != "new" else 0.
+    multiplier = 3. if mode == "nonzero" else 1. if mode == "implicit" else 0.
     torch.testing.assert_close(x.grad, torch.tensor(24. * multiplier))
 
 

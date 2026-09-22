@@ -1,0 +1,309 @@
+{
+  "matrix": [
+    {
+      "mode": "ddp",
+      "precision": "fp32",
+      "returncode": 0
+    },
+    {
+      "mode": "fsdp2",
+      "precision": "fp32",
+      "returncode": 0
+    },
+    {
+      "mode": "tp",
+      "precision": "fp32",
+      "returncode": 0
+    },
+    {
+      "mode": "gpipe",
+      "precision": "fp32",
+      "returncode": 0
+    },
+    {
+      "mode": "1f1b",
+      "precision": "fp32",
+      "returncode": 0
+    },
+    {
+      "mode": "ddp",
+      "precision": "bf16",
+      "returncode": 0
+    },
+    {
+      "mode": "fsdp2",
+      "precision": "bf16",
+      "returncode": 0
+    },
+    {
+      "mode": "tp",
+      "precision": "bf16",
+      "returncode": 0
+    },
+    {
+      "mode": "gpipe",
+      "precision": "bf16",
+      "returncode": 0
+    },
+    {
+      "mode": "1f1b",
+      "precision": "bf16",
+      "returncode": 0
+    },
+    {
+      "mode": "ddp",
+      "precision": "fp16",
+      "returncode": 0
+    },
+    {
+      "mode": "fsdp2",
+      "precision": "fp16",
+      "returncode": 0
+    },
+    {
+      "mode": "tp",
+      "precision": "fp16",
+      "returncode": 0
+    },
+    {
+      "mode": "gpipe",
+      "precision": "fp16",
+      "returncode": 0
+    },
+    {
+      "mode": "1f1b",
+      "precision": "fp16",
+      "returncode": 0
+    }
+  ],
+  "receipts": {
+    "evidence/ddp_fp32/accepted.json": {
+      "mode": "ddp",
+      "precision": "fp32",
+      "steps": 6,
+      "torch": "2.8.0+cu128",
+      "cuda": "12.8",
+      "device": "NVIDIA RTX 5000 Ada Generation",
+      "world_size": 2,
+      "save_after": 4,
+      "native_parity": true,
+      "checkpoint_resume": true,
+      "single_cpu_inference": true,
+      "rtol": 1e-05,
+      "atol": 1e-06
+    },
+    "evidence/ddp_fp16/accepted.json": {
+      "mode": "ddp",
+      "precision": "fp16",
+      "steps": 6,
+      "torch": "2.8.0+cu128",
+      "cuda": "12.8",
+      "device": "NVIDIA RTX 5000 Ada Generation",
+      "world_size": 2,
+      "save_after": 4,
+      "native_parity": true,
+      "checkpoint_resume": true,
+      "single_cpu_inference": true,
+      "rtol": 0.02,
+      "atol": 0.002
+    },
+    "evidence/fsdp2_fp32/accepted.json": {
+      "mode": "fsdp2",
+      "precision": "fp32",
+      "steps": 6,
+      "torch": "2.8.0+cu128",
+      "cuda": "12.8",
+      "device": "NVIDIA RTX 5000 Ada Generation",
+      "world_size": 2,
+      "save_after": 4,
+      "native_parity": true,
+      "checkpoint_resume": true,
+      "single_cpu_inference": true,
+      "rtol": 1e-05,
+      "atol": 1e-06
+    },
+    "evidence/ddp_bf16/accepted.json": {
+      "mode": "ddp",
+      "precision": "bf16",
+      "steps": 6,
+      "torch": "2.8.0+cu128",
+      "cuda": "12.8",
+      "device": "NVIDIA RTX 5000 Ada Generation",
+      "world_size": 2,
+      "save_after": 4,
+      "native_parity": true,
+      "checkpoint_resume": true,
+      "single_cpu_inference": true,
+      "rtol": 0.02,
+      "atol": 0.002
+    },
+    "evidence/1f1b_fp16/accepted.json": {
+      "mode": "1f1b",
+      "precision": "fp16",
+      "steps": 6,
+      "torch": "2.8.0+cu128",
+      "cuda": "12.8",
+      "device": "NVIDIA RTX 5000 Ada Generation",
+      "world_size": 2,
+      "save_after": 4,
+      "native_parity": true,
+      "checkpoint_resume": true,
+      "single_cpu_inference": true,
+      "rtol": 0.02,
+      "atol": 0.002
+    },
+    "evidence/gpipe_fp32/accepted.json": {
+      "mode": "gpipe",
+      "precision": "fp32",
+      "steps": 6,
+      "torch": "2.8.0+cu128",
+      "cuda": "12.8",
+      "device": "NVIDIA RTX 5000 Ada Generation",
+      "world_size": 2,
+      "save_after": 4,
+      "native_parity": true,
+      "checkpoint_resume": true,
+      "single_cpu_inference": true,
+      "rtol": 1e-05,
+      "atol": 1e-06
+    },
+    "evidence/1f1b_fp32/accepted.json": {
+      "mode": "1f1b",
+      "precision": "fp32",
+      "steps": 6,
+      "torch": "2.8.0+cu128",
+      "cuda": "12.8",
+      "device": "NVIDIA RTX 5000 Ada Generation",
+      "world_size": 2,
+      "save_after": 4,
+      "native_parity": true,
+      "checkpoint_resume": true,
+      "single_cpu_inference": true,
+      "rtol": 1e-05,
+      "atol": 1e-06
+    },
+    "evidence/fsdp2_bf16/accepted.json": {
+      "mode": "fsdp2",
+      "precision": "bf16",
+      "steps": 6,
+      "torch": "2.8.0+cu128",
+      "cuda": "12.8",
+      "device": "NVIDIA RTX 5000 Ada Generation",
+      "world_size": 2,
+      "save_after": 4,
+      "native_parity": true,
+      "checkpoint_resume": true,
+      "single_cpu_inference": true,
+      "rtol": 0.02,
+      "atol": 0.002
+    },
+    "evidence/1f1b_bf16/accepted.json": {
+      "mode": "1f1b",
+      "precision": "bf16",
+      "steps": 6,
+      "torch": "2.8.0+cu128",
+      "cuda": "12.8",
+      "device": "NVIDIA RTX 5000 Ada Generation",
+      "world_size": 2,
+      "save_after": 4,
+      "native_parity": true,
+      "checkpoint_resume": true,
+      "single_cpu_inference": true,
+      "rtol": 0.02,
+      "atol": 0.002
+    },
+    "evidence/tp_fp32/accepted.json": {
+      "mode": "tp",
+      "precision": "fp32",
+      "steps": 6,
+      "torch": "2.8.0+cu128",
+      "cuda": "12.8",
+      "device": "NVIDIA RTX 5000 Ada Generation",
+      "world_size": 2,
+      "save_after": 4,
+      "native_parity": true,
+      "checkpoint_resume": true,
+      "single_cpu_inference": true,
+      "rtol": 1e-05,
+      "atol": 1e-06
+    },
+    "evidence/gpipe_fp16/accepted.json": {
+      "mode": "gpipe",
+      "precision": "fp16",
+      "steps": 6,
+      "torch": "2.8.0+cu128",
+      "cuda": "12.8",
+      "device": "NVIDIA RTX 5000 Ada Generation",
+      "world_size": 2,
+      "save_after": 4,
+      "native_parity": true,
+      "checkpoint_resume": true,
+      "single_cpu_inference": true,
+      "rtol": 0.02,
+      "atol": 0.002
+    },
+    "evidence/tp_bf16/accepted.json": {
+      "mode": "tp",
+      "precision": "bf16",
+      "steps": 6,
+      "torch": "2.8.0+cu128",
+      "cuda": "12.8",
+      "device": "NVIDIA RTX 5000 Ada Generation",
+      "world_size": 2,
+      "save_after": 4,
+      "native_parity": true,
+      "checkpoint_resume": true,
+      "single_cpu_inference": true,
+      "rtol": 0.02,
+      "atol": 0.002
+    },
+    "evidence/fsdp2_fp16/accepted.json": {
+      "mode": "fsdp2",
+      "precision": "fp16",
+      "steps": 6,
+      "torch": "2.8.0+cu128",
+      "cuda": "12.8",
+      "device": "NVIDIA RTX 5000 Ada Generation",
+      "world_size": 2,
+      "save_after": 4,
+      "native_parity": true,
+      "checkpoint_resume": true,
+      "single_cpu_inference": true,
+      "rtol": 0.02,
+      "atol": 0.002
+    },
+    "evidence/tp_fp16/accepted.json": {
+      "mode": "tp",
+      "precision": "fp16",
+      "steps": 6,
+      "torch": "2.8.0+cu128",
+      "cuda": "12.8",
+      "device": "NVIDIA RTX 5000 Ada Generation",
+      "world_size": 2,
+      "save_after": 4,
+      "native_parity": true,
+      "checkpoint_resume": true,
+      "single_cpu_inference": true,
+      "rtol": 0.02,
+      "atol": 0.002
+    },
+    "evidence/gpipe_bf16/accepted.json": {
+      "mode": "gpipe",
+      "precision": "bf16",
+      "steps": 6,
+      "torch": "2.8.0+cu128",
+      "cuda": "12.8",
+      "device": "NVIDIA RTX 5000 Ada Generation",
+      "world_size": 2,
+      "save_after": 4,
+      "native_parity": true,
+      "checkpoint_resume": true,
+      "single_cpu_inference": true,
+      "rtol": 0.02,
+      "atol": 0.002
+    }
+  },
+  "single_gpu": {
+    "returncode": 0
+  }
+}

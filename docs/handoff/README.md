@@ -1,19 +1,21 @@
-# Handoff
+# V5 candidate handoff — 2026-09-22
 
-Current source and release notes are in README.md and docs/development.md.
+[status.json](status.json) separates implementation, isolated validation and
+production acceptance. Message is Tensor. The candidate repairs incomplete
+epoch accumulation, complete train-step checkpoint/recovery, native PP AMP
+metadata and scaling, and canonical distributed-checkpoint inference. Optional
+architectures are ported from the actual V4 consumer revision.
 
-## Current status publication
+CPU baseline: 171 passed, 34 explicitly skipped. Isolated single Ada GPU full
+extended model suite: 201 passed, 3 unsupported CPU FP16 skips. Two Ada GPUs:
+15 parallel-family/precision fixtures passed, including optimizer state, pending
+gradients, continued updates and consolidated CPU inference. GPU source manifests
+and [receipts](../acceptance/20260922/gpu_receipts.json) identify the snapshots;
+subsequent changes still require exact-commit acceptance. NCCL P2P is disabled
+in this validation environment because default device peer initialization hangs;
+shared-memory transport is recorded rather than hidden.
 
-Machine-readable current evidence is [status.json](status.json). Source review and live runtime verification are distinct; this publication does not change scientific jobs or certify unfinished experiments. Update this record after material evidence review.
-# 2026-09-22 candidate: incomplete accumulation windows
-
-The V5 release candidate tracks accumulation-window position separately from the
-total completed microstep count. A forced tail update now closes the window, so
-the next epoch starts a fresh window with correct loss weighting. Two three-batch
-epochs with accumulation=2 match native PyTorch SGD with momentum at
-rtol=1e-5/atol=1e-6. The complete local PyTorch 2.8 CPU suite passed 131 tests;
-18 GPU/unsupported precision cases were explicitly skipped.
-
-This candidate is not the formal release. Pending-window checkpoint recovery,
-PP mixed-precision metadata, architecture porting, distributed/GPU acceptance,
-consumer conversion and release verification remain open. Message remains Tensor.
+[English migration](../migration-v5.md) / [中文迁移](../migration-v5.zh-CN.md).
+V5 remains a preview. Production artifacts and consumers have not been switched;
+Ibex incidents and cross-platform recovery remain rollout gates. V4 is untouched.
+Do not replace the tag or announce completion from these synthetic checks alone.

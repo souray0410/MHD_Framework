@@ -30,4 +30,6 @@ from mhd_framework.utils import MHD_Trainer
 
 ## models
 
-[模型结构与训练权重登记规范](docs/models.md)。当前初始目录处于规划阶段；结构实现、训练完成与权重可复用分别验收。
+安装 `models` 可选依赖后，通过 `mhd_framework.models.create_model` 构建带有具名节点端点的模型；扩展编码器使用 `models_extended`。见[可运行模型示例](examples/model.py)和[模型及权重登记规范](docs/models.md)。架构实现、训练完成与权重可复用分别验收。
+
+[V4 → V5 迁移说明](docs/migration-v5.zh-CN.md)列出接口变化、断点及独立转换边界。Message 仍统一为 Tensor。

@@ -2,35 +2,50 @@
   "schema": "research_project_status_v1",
   "project": "MHD_Framework",
   "goal": "Versioned explicit hypergraph computation framework",
-  "phase": "v5_development_v4_release",
-  "next_acceptance": "Version-specific source, wheel and runtime acceptance",
+  "phase": "v5_candidate_framework_acceptance",
+  "next_acceptance": "Exact release commit and packaged install, then registered consumer/asset acceptance before V5 publication",
   "dependencies": [
     "Version-pinned dependency and tests"
   ],
-  "source_commit": "de38a4254d906b705b0f10326282eef357e0220a",
-  "evidence_cutoff": "2026-09-16T09:39:44.263419+00:00",
-  "verified_at": "2026-09-16T09:39:44.263419+00:00",
-  "verification_scope": "source_review_only",
+  "source_commit": "16360fef66dd9dcbfbe73afeeba953ceb53626a7",
+  "evidence_cutoff": "2026-09-22T12:53:20.593136+00:00",
+  "verified_at": "2026-09-22T12:53:20.593136+00:00",
+  "verification_scope": "candidate source manifests, CPU and isolated CUDA synthetic runtime acceptance",
   "layers": {
-    "planned": "documented",
-    "implemented": "partial",
-    "deployed": "not_rechecked",
-    "running": "not_rechecked",
-    "accepted": "not_rechecked"
+    "planned": "approved Tensor-only V5 release and PHD consumer migration",
+    "implemented": "candidate accumulation, complete-step recovery, PP AMP, models and canonical inference",
+    "deployed": "isolated acceptance snapshots only; production consumers unchanged",
+    "running": "production jobs retain their pinned sources; separate rollout ledger owns operations",
+    "accepted": "CPU and CUDA candidate fixtures passed; release and consumer migration pending"
   },
-  "results": [],
-  "limitations": [
-    "Repository inspection is not GPU runtime acceptance"
+  "results": [
+    "CPU PyTorch 2.8: 171 passed, 34 explicitly skipped",
+    "Single RTX 5000 Ada full extended architecture candidate: 201 passed, 3 unsupported CPU FP16 skips",
+    "Two RTX 5000 Ada: 15 combinations of DDP/FSDP2/TP/GPipe/1F1B and FP32/BF16/FP16; checkpoint after four steps with populated optimizer state and pending gradients; canonical CPU inference"
   ],
-  "blockers": [],
+  "limitations": [
+    "GPU fixtures use synthetic data; no medical performance claim",
+    "Candidate GPU manifests predate documentation, stricter DenseNet test and cross-stage shared-parameter rejection; exact commit rerun required",
+    "Cross-stage PP parameter tying is explicitly rejected; within-stage sharing retained",
+    "No production artifact conversion, cross-platform A100/Ada continuation or release download verification yet"
+  ],
+  "blockers": [
+    "Production consumer/asset inventory and conversion incomplete",
+    "Original Ibex resource and priority incidents remain owned in the rollout ledger"
+  ],
   "actions": [
-    "Source and current handoff inspected; no scientific execution changed."
+    "Port architectures from pinned V4 without changing node endpoints or weights",
+    "Preserve preview status until formal gates pass"
   ],
   "decisions": [],
   "evidence": [
     {
-      "label": "Reviewed source snapshot",
-      "url": "https://github.com/souray0410/MHD_Framework/blob/de38a4254d906b705b0f10326282eef357e0220a/README.md"
+      "label": "Candidate CUDA receipts and source digests",
+      "path": "docs/acceptance/20260922/gpu_receipts.json"
+    },
+    {
+      "label": "Migration and checkpoint contract",
+      "path": "docs/migration-v5.md"
     }
   ]
 }

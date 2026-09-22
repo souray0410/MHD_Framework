@@ -7,7 +7,7 @@ from mhd_framework.utils import MHD_Trainer
 
 ## State and operations
 
-`MHD_Node.Message` carries initial and current state. Nodes expose feature and gradient messages. `MHD_Edge.Operation` wraps an operation; an edge stores an ordered list of operations, including ordinary PyTorch modules.
+`MHD_Node.Message` carries Tensor initial and current state. Nodes expose feature and gradient messages. `MHD_Edge.Operation` wraps an operation; an edge stores an ordered list of operations, including ordinary PyTorch modules.
 
 ## Topology and execution
 
@@ -26,3 +26,10 @@ V5 is developing. Aggregation defaults to `sum` with `memory=False`; `replace` i
 The package migration preserves tensor operations. Strict state_dict loading, outputs and gradients are checked independently. Full-object Python pickles include module paths and require the original environment when those paths differ. [History](history.md) identifies archived source; this release does not silently alias obsolete module paths.
 
 [Detailed V5 semantics and examples (中文)](api.zh-CN.md).
+
+## Complete-step persistence and model adapters
+
+See [V4 → V5 migration](migration-v5.md) for the unique Trainer checkpoint
+contract, caller-owned data cursor, pending accumulation gradients, PP AMP
+metadata and parallel limitations. Optional model builders live in
+`mhd_framework.models`; trained assets require their own migration acceptance.
