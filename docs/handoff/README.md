@@ -1,3 +1,7 @@
+## Exact current implementation acceptance
+
+Commit `c78cfbdc9ec01e4dc1dc8ee04d04b2e6a8446808` passed CPU 172/34 skips, single Ada 203/3 skips, all 15 two-Ada mode/precision cases and a new-environment wheel installation with both examples. [Exact evidence](../acceptance/20260922/exact_commit_c78cfbd.json). Subsequent changes here only publish evidence and repair the shared status contract; they do not change runtime source. V5 remains a candidate pending consumer, cross-platform and release-download gates.
+
 # V5 candidate handoff — 2026-09-22
 
 [status.json](status.json) separates implementation, isolated validation and

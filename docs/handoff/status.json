@@ -7,24 +7,18 @@
   "dependencies": [
     "Version-pinned dependency and tests"
   ],
-  "source_commit": "a9e6b41cdf646a0775185386f5260e95ee0b9083",
-  "evidence_cutoff": "2026-09-22T12:53:20.593136+00:00",
-  "verified_at": "2026-09-22T12:53:20.593136+00:00",
-  "verification_scope": "exact candidate commit CPU/CI, single CUDA, two-GPU matrix and outside-checkout wheel examples",
+  "source_commit": "c78cfbdc9ec01e4dc1dc8ee04d04b2e6a8446808",
+  "evidence_cutoff": "2026-09-22T17:03:38.068442+00:00",
+  "verified_at": "2026-09-22T17:03:38.068442+00:00",
+  "verification_scope": "runtime_and_evidence",
   "layers": {
-    "planned": "approved Tensor-only V5 release and PHD consumer migration",
-    "implemented": "candidate accumulation, complete-step recovery, PP AMP, models and canonical inference",
-    "deployed": "isolated acceptance snapshots only; production consumers unchanged",
-    "running": "production jobs retain their pinned sources; separate rollout ledger owns operations",
-    "accepted": "CPU and CUDA candidate fixtures passed; release and consumer migration pending"
+    "planned": "documented",
+    "implemented": "verified",
+    "deployed": "partial",
+    "running": "not_applicable",
+    "accepted": "partial"
   },
-  "results": [
-    "PyTorch 2.8 CPU: 171 passed, 34 explicitly skipped",
-    "Exact commit single RTX 5000 Ada: 202 passed, 3 unsupported CPU FP16 skips",
-    "Exact commit two RTX 5000 Ada: 15 parallel/precision fixtures passed with optimizer and pending-window recovery plus consolidated CPU inference",
-    "GitHub CI 35730436334 succeeded",
-    "wheel and sdist built; wheel installed into a new environment outside checkout; basic.py and model.py passed"
-  ],
+  "results": [],
   "limitations": [
     "GPU fixtures use synthetic data; no medical performance claim",
     "Cross-stage PP parameter tying is explicitly rejected; within-stage sharing retained",
@@ -36,21 +30,20 @@
   ],
   "actions": [
     "Port architectures from pinned V4 without changing node endpoints or weights",
-    "Preserve preview status until formal gates pass"
+    "Preserve preview status until formal gates pass",
+    "Exact c78 CPU: 172 passed, 34 skipped; single RTX 5000 Ada: 203 passed, 3 unsupported CPU FP16 skips.",
+    "Exact c78 two-Ada matrix: all 15 parallel/precision combinations passed; wheel/sdist built, new environment installed wheel, both examples passed.",
+    "Acceptance is a framework fixture gate. Production consumers, cross-platform continuation, final publication and re-download remain pending."
   ],
   "decisions": [],
   "evidence": [
     {
-      "label": "Candidate CUDA receipts and source digests",
-      "path": "docs/acceptance/20260922/gpu_receipts.json"
+      "label": "Exact c78 source, environment, numeric fixtures and package digests",
+      "url": "https://github.com/souray0410/MHD_Framework/blob/1364cc65616e9cb43d6f1be1426c416dc1415e31/docs/acceptance/20260922/exact_commit_c78cfbd.json"
     },
     {
       "label": "Migration and checkpoint contract",
-      "path": "docs/migration-v5.md"
-    },
-    {
-      "label": "Exact commit, hardware, environment, tests and wheel digests",
-      "path": "docs/acceptance/20260922/exact_commit_a9e6b41.json"
+      "url": "https://github.com/souray0410/MHD_Framework/blob/c78cfbdc9ec01e4dc1dc8ee04d04b2e6a8446808/docs/migration-v5.md"
     }
   ]
 }
