@@ -124,3 +124,10 @@ def test_slice_pool_is_the_same_depth_one_operator():
     torch.testing.assert_close(actual,expected,rtol=0,atol=0)
     g=torch.randn_like(actual)
     torch.testing.assert_close(torch.autograd.grad(actual,x,g)[0],torch.autograd.grad(expected,x,g)[0],rtol=0,atol=0)
+
+
+def test_current_runtime_rejects_v4_even_with_current_source_hashes():
+    from mhd_framework.models.artifacts import verify_runtime
+    with pytest.raises(ValueError,match='migrate'):
+        verify_runtime(dict(api='V4',source_sha256=runtime_source_sha256()))
+    verify_runtime(dict(api='V5',source_sha256=runtime_source_sha256()))

@@ -211,5 +211,8 @@ def runtime_source_sha256():
 
 
 def verify_runtime(framework):
+    from mhd_framework import __api_version__
+    if framework.get('api') != __api_version__:
+        raise ValueError('Current V5 artifact required; migrate the source artifact explicitly')
     if framework.get('source_sha256') != runtime_source_sha256():
         raise ValueError('Installed framework/model implementation differs from the pinned bundle')
