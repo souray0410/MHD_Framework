@@ -1488,6 +1488,7 @@ class MHD_Trainer:
         self.monitor_interval_steps = monitor_interval_steps
         self.last_monitor_metrics: Dict[str, float] = {}
         self._micro_step = 0
+        self._accumulation_step = 0
         self._optimizer_steps = 0
         self._accumulation_paths: Optional[Tuple[Tuple[int, ...], Tuple[int, ...]]] = None
         self.last_eval_tensors: Dict[str, torch.Tensor] = {}
@@ -1801,12 +1802,12 @@ class MHD_Trainer:
         self.model.train()
         if self.train_mode_setter is not None:
             self.train_mode_setter(self.mhd_graph)
-        if self._micro_step % self.grad_accum_steps == 0:
+        if self._accumulation_step == 0:
             self.optimizer.zero_grad(set_to_none=True)
             self._accumulation_paths = (active_forward, active_backward)
         elif self._accumulation_paths != (active_forward, active_backward):
             raise ValueError("同一梯度累积窗口内 Forward/Backward 路径必须一致")
-        should_step = ((self._micro_step + 1) % self.grad_accum_steps == 0) or _force_step
+        should_step = (self._accumulation_step + 1 == self.grad_accum_steps) or _force_step
         sync_context = (
             self.model.no_sync()
             if not should_step and hasattr(self.model, "no_sync")
@@ -1865,6 +1866,9 @@ class MHD_Trainer:
             ):
                 self._optimizer_steps += 1
             self._accumulation_paths = None
+            self._accumulation_step = 0
+        else:
+            self._accumulation_step += 1
         self._micro_step += 1
         return self._collect_metrics(outputs)
 

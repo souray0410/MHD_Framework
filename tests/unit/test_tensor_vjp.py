@@ -281,6 +281,35 @@ def test_tensor_trainer_amp_accumulation_matches_native(tmp_path, precision, dev
     torch.testing.assert_close(module.weight.grad, native.weight.grad)
 
 
+def test_uneven_epoch_closes_accumulation_window_and_matches_native(tmp_path):
+    module=Scale()
+    graph=make([module,square],CHAIN)
+    optimizer=torch.optim.SGD(graph.parameters(),lr=0.01,momentum=0.5)
+    trainer=MHD_Trainer(
+        graph,optimizer,MHD_Monitor(["n2"]),[0,1],[2,3],
+        criteria=lambda g:g.get_node_by_id(2).feature_message.current_state.mean(),
+        save_dir=str(tmp_path),input_nodes=["n0"],output_nodes=["n2"],
+        grad_accum_steps=2,
+        distributed_context=MHD_DistributedContext(0,0,1,torch.device("cpu"),"gloo"),
+    )
+    native=Scale();native.load_state_dict(module.state_dict())
+    native_optimizer=torch.optim.SGD(native.parameters(),lr=0.01,momentum=0.5)
+    for epoch in range(2):
+        batches=[{"n0":torch.tensor([float(i+1+epoch)])} for i in range(3)]
+        for start in range(0,len(batches),2):
+            window=batches[start:start+2]
+            native_optimizer.zero_grad(set_to_none=True)
+            for batch in window:
+                (native(batch["n0"]).square()/len(window)).backward()
+            native_optimizer.step()
+        trainer.train_epoch(batches,epoch)
+        torch.testing.assert_close(module.weight,native.weight,rtol=1e-5,atol=1e-6)
+        torch.testing.assert_close(module.weight.grad,native.weight.grad,rtol=1e-5,atol=1e-6)
+        assert trainer._accumulation_step==0
+        assert trainer._accumulation_paths is None
+        assert trainer._optimizer_steps==2*(epoch+1)
+
+
 @pytest.mark.skipif(os.environ.get("MHD_TEST_CUDA") != "1", reason="explicit GPU opt-in required")
 @pytest.mark.parametrize("explicit", [False, True])
 def test_device_migration_preserves_zero_input_provenance(explicit):
