@@ -2,27 +2,27 @@
   "schema": "research_project_status_v1",
   "project": "MHD_Framework",
   "goal": "Versioned explicit hypergraph computation framework",
-  "phase": "v5_formal_package_release_preflight",
-  "next_acceptance": "Publish archived-preview replacement, re-download and independently install both V5 assets; then complete each consumer's separate production cutover",
+  "phase": "v5_formal_package_released",
+  "next_acceptance": "Complete each consumer's exact-version asset conversion, full-data validation and separate production cutover",
   "dependencies": [
     "Version-pinned dependency and tests"
   ],
-  "source_commit": "c78cfbdc9ec01e4dc1dc8ee04d04b2e6a8446808",
-  "evidence_cutoff": "2026-09-22T17:03:38.068442+00:00",
-  "verified_at": "2026-09-22T17:03:38.068442+00:00",
+  "source_commit": "1287681c08846e11364c81653048435482e772a7",
+  "evidence_cutoff": "2026-09-23T07:00:00+00:00",
+  "verified_at": "2026-09-23T07:00:00+00:00",
   "verification_scope": "runtime_and_evidence",
   "layers": {
     "planned": "documented",
     "implemented": "verified",
-    "deployed": "partial",
+    "deployed": "verified",
     "running": "not_applicable",
-    "accepted": "partial"
+    "accepted": "framework_package_only"
   },
   "results": [],
   "limitations": [
     "GPU fixtures use synthetic data; no medical performance claim",
     "Cross-stage PP parameter tying is explicitly rejected; within-stage sharing retained",
-    "No production artifact conversion, cross-platform A100/Ada continuation or release download verification yet"
+    "Production artifact conversion and cross-platform A100/Ada continuation remain separate project gates"
   ],
   "blockers": [
     "Production consumer/asset inventory and conversion incomplete",
@@ -30,10 +30,12 @@
   ],
   "actions": [
     "Port architectures from pinned V4 without changing node endpoints or weights",
-    "Archive the preview and verify the formal package before changing the V5 tag and assets",
+    "Archived the preview tag and assets before replacing V5; V4 tag remains unchanged.",
     "Exact c78 CPU: 172 passed, 34 skipped; single RTX 5000 Ada: 203 passed, 3 unsupported CPU FP16 skips.",
     "Exact c78 two-Ada matrix: all 15 parallel/precision combinations passed; wheel/sdist built, new environment installed wheel, both examples passed.",
-    "Acceptance is a framework fixture gate. Production consumers, cross-platform continuation, final publication and re-download remain pending."
+    "Exact release commit 1287681 passed PyTorch 2.8 CPU 172/34 skips and GitHub CI 35828618583; runtime source and package metadata match validated c78.",
+    "Formal V5 tag now peels to 1287681. Published wheel and sdist were re-downloaded from GitHub, SHA256-checked and independently installed; both examples passed from each clean environment.",
+    "Framework publication is complete. Production consumers and cross-platform continuation remain pending."
   ],
   "decisions": [],
   "evidence": [
@@ -44,6 +46,10 @@
     {
       "label": "Migration and checkpoint contract",
       "url": "https://github.com/souray0410/MHD_Framework/blob/c78cfbdc9ec01e4dc1dc8ee04d04b2e6a8446808/docs/migration-v5.md"
+    },
+    {
+      "label": "Formal V5 release assets",
+      "url": "https://github.com/souray0410/MHD_Framework/releases/tag/V5"
     }
   ]
 }

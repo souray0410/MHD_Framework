@@ -1,8 +1,12 @@
-## Exact current implementation acceptance
+## Formal V5 package release — 2026-09-23
+
+The annotated `V5` tag peels to commit `1287681c08846e11364c81653048435482e772a7`; GitHub release [V5](https://github.com/souray0410/MHD_Framework/releases/tag/V5) is published as a non-preview release. The original preview tag and assets were archived before replacement; `V4` is unchanged. The wheel and sdist were downloaded back from GitHub, checked against the published SHA256SUMS, installed in separate clean environments outside the checkout, and each ran `basic.py` and `model.py`. The exact release commit passed PyTorch 2.8 CPU 172/34 skips and GitHub CI 35828618583. No runtime or package metadata changed from the GPU-validated implementation below. Application asset conversion, full-data training, Ibex incidents and cross-platform resume retain separate gates.
+
+## Exact implementation acceptance
 
 Commit `c78cfbdc9ec01e4dc1dc8ee04d04b2e6a8446808` passed CPU 172/34 skips, single Ada 203/3 skips, all 15 two-Ada mode/precision cases and a new-environment wheel installation with both examples. [Exact evidence](../acceptance/20260922/exact_commit_c78cfbd.json). Subsequent changes only update documentation and shared status, not runtime source. Formal package publication is separate from consumer migration, cross-platform continued training and medical acceptance.
 
-# V5 candidate handoff — 2026-09-22
+# V5 implementation history — 2026-09-22
 
 [status.json](status.json) separates implementation, isolated validation and
 production acceptance. Message is Tensor. The candidate repairs incomplete
