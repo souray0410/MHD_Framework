@@ -8,6 +8,16 @@ from mhd_framework.models.training import optimizer_for
 torch.set_num_threads(2)
 
 
+@pytest.fixture
+def native_parity_backend():
+    # Compare the decomposed graph and native model with the same CPU kernels.
+    # oneDNN may select different reductions across their module boundaries;
+    # the CUDA model suite is accepted separately on the target device.
+    with torch.backends.mkldnn.flags(enabled=False):
+        yield
+
+
+@pytest.mark.usefixtures('native_parity_backend')
 @pytest.mark.parametrize('name', ['vit_b_16', 'swin_t', 'convnext_tiny', 'efficientnet_v2_s', 'vit_base_patch14_dinov2'])
 def test_transformer_native_output_gradient_update_and_restore(name):
     torch.use_deterministic_algorithms(True)
