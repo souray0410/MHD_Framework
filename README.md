@@ -11,16 +11,16 @@ MHD Framework represents neural computation with four components: nodes carry te
 Python 3.11–3.13 and PyTorch 2.8 or later are required. Install the appropriate PyTorch build for your hardware, then select a framework release:
 
 ```bash
-python -m pip install "mhd-framework @ git+https://github.com/souray0410/MHD_Framework.git@V4"
+python -m pip install "mhd-framework @ git+https://github.com/souray0410/MHD_Framework.git@V5"
 ```
 
 | Version | Status | Source |
 |---|---|---|
-| V4 | Stable API with frozen computation semantics | [V4](https://github.com/souray0410/MHD_Framework/tree/V4) |
-| V5 | Development preview | [V5](https://github.com/souray0410/MHD_Framework/tree/V5) |
-| main | Ongoing V5 development | [main](https://github.com/souray0410/MHD_Framework/tree/main) |
+| V4 | Frozen research release | [V4](https://github.com/souray0410/MHD_Framework/tree/V4) |
+| V5 | Formal Tensor API release | [V5](https://github.com/souray0410/MHD_Framework/tree/V5) |
+| main | Ongoing development | [main](https://github.com/souray0410/MHD_Framework/tree/main) |
 
-Release archives and wheels are distributed through GitHub Releases. See [installation](docs/installation.md) for preview and editable installs.
+Release archives and wheels are distributed through GitHub Releases. See [installation](docs/installation.md) for pinned and editable installs. Application checkpoint migration and production acceptance remain separate from the framework release.
 
 ## Core API
 

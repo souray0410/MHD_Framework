@@ -3,9 +3,9 @@
 Use a virtual environment and install PyTorch for the target hardware first. Release source installs:
 
 ```bash
-# Stable API
+# Frozen V4 research release
 python -m pip install "mhd-framework @ git+https://github.com/souray0410/MHD_Framework.git@V4"
-# Development preview: choose explicitly in a separate environment
+# Formal V5 Tensor API release
 python -m pip install "mhd-framework @ git+https://github.com/souray0410/MHD_Framework.git@V5"
 ```
 
@@ -17,4 +17,4 @@ print(mhd_framework.__version__)
 print(mhd_framework.__api_version__)
 ```
 
-An environment contains one installed framework release. Changing versions changes API behavior; it does not switch a runtime compatibility layer. The package requires Python 3.11–3.13 and PyTorch >=2.8; CPU checks currently run on Python 3.11 / PyTorch 2.8. Other hardware and precision modes need their own validation.
+An environment contains one installed framework release. Changing versions changes API behavior; it does not switch a runtime compatibility layer. The package requires Python 3.11–3.13 and PyTorch >=2.8. Release acceptance uses PyTorch 2.8; see the release evidence for exact CPU and GPU environments. Application weights, data and continued training need separate acceptance.

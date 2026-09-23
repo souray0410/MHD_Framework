@@ -11,11 +11,11 @@ Node 保存张量状态，Edge 封装运算，Topo 定义节点与边的连接�
 支持 Python 3.11–3.13、PyTorch 2.8 及以上。先根据硬件安装对应 PyTorch，再选择框架版本：
 
 ```bash
-python -m pip install "mhd-framework @ git+https://github.com/souray0410/MHD_Framework.git@V4"
+python -m pip install "mhd-framework @ git+https://github.com/souray0410/MHD_Framework.git@V5"
 ```
 
-- **V4**：计算语义冻结的稳定 API。
-- **V5**：开发预览版，需主动选择；main 继续开发此版本。
+- **V4**：计算语义冻结的历史研究版本。
+- **V5**：Tensor Message 的正式版本；应用权重与续训断点另行迁移验收。
 
 版本源码和 wheel 通过 GitHub Releases 下载，各版本使用相同导入路径：
 

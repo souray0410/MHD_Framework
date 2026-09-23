@@ -2,8 +2,8 @@
   "schema": "research_project_status_v1",
   "project": "MHD_Framework",
   "goal": "Versioned explicit hypergraph computation framework",
-  "phase": "v5_candidate_framework_acceptance",
-  "next_acceptance": "Exact release commit and packaged install, then registered consumer/asset acceptance before V5 publication",
+  "phase": "v5_formal_package_release_preflight",
+  "next_acceptance": "Publish archived-preview replacement, re-download and independently install both V5 assets; then complete each consumer's separate production cutover",
   "dependencies": [
     "Version-pinned dependency and tests"
   ],
@@ -30,7 +30,7 @@
   ],
   "actions": [
     "Port architectures from pinned V4 without changing node endpoints or weights",
-    "Preserve preview status until formal gates pass",
+    "Archive the preview and verify the formal package before changing the V5 tag and assets",
     "Exact c78 CPU: 172 passed, 34 skipped; single RTX 5000 Ada: 203 passed, 3 unsupported CPU FP16 skips.",
     "Exact c78 two-Ada matrix: all 15 parallel/precision combinations passed; wheel/sdist built, new environment installed wheel, both examples passed.",
     "Acceptance is a framework fixture gate. Production consumers, cross-platform continuation, final publication and re-download remain pending."

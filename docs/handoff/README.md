@@ -1,6 +1,6 @@
 ## Exact current implementation acceptance
 
-Commit `c78cfbdc9ec01e4dc1dc8ee04d04b2e6a8446808` passed CPU 172/34 skips, single Ada 203/3 skips, all 15 two-Ada mode/precision cases and a new-environment wheel installation with both examples. [Exact evidence](../acceptance/20260922/exact_commit_c78cfbd.json). Subsequent changes here only publish evidence and repair the shared status contract; they do not change runtime source. V5 remains a candidate pending consumer, cross-platform and release-download gates.
+Commit `c78cfbdc9ec01e4dc1dc8ee04d04b2e6a8446808` passed CPU 172/34 skips, single Ada 203/3 skips, all 15 two-Ada mode/precision cases and a new-environment wheel installation with both examples. [Exact evidence](../acceptance/20260922/exact_commit_c78cfbd.json). Subsequent changes only update documentation and shared status, not runtime source. Formal package publication is separate from consumer migration, cross-platform continued training and medical acceptance.
 
 # V5 candidate handoff — 2026-09-22
 
@@ -20,9 +20,10 @@ in this validation environment because default device peer initialization hangs;
 shared-memory transport is recorded rather than hidden.
 
 [English migration](../migration-v5.md) / [中文迁移](../migration-v5.zh-CN.md).
-V5 remains a preview. Production artifacts and consumers have not been switched;
-Ibex incidents and cross-platform recovery remain rollout gates. V4 is untouched.
-Do not replace the tag or announce completion from these synthetic checks alone.
+The original V5 preview was archived before the formal release update. Production
+artifacts and consumers still need their own cutover evidence; Ibex incidents and
+cross-platform recovery remain project rollout gates. V4 is untouched. Synthetic
+framework checks alone do not certify medical application results.
 
 ## Exact candidate commit accepted
 
