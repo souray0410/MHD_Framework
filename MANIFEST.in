@@ -1,0 +1,16 @@
+include .github/workflows/checks.yml
+include .gitignore
+include LICENSE
+include NOTICE.md
+include README.md
+include examples/synthetic_graph.py
+include pyproject.toml
+include src/mhd_framework/__init__.py
+include src/mhd_framework/core.py
+include src/mhd_framework/models/__init__.py
+include src/mhd_framework/models/graph.py
+include src/mhd_framework/models/resnet.py
+include tests/unit/test_named_adapter_contract.py
+include tests/unit/test_node_memory.py
+include tests/unit/test_public_package.py
+global-exclude __pycache__ *.py[cod]
